@@ -30,7 +30,9 @@
         "vue-loader": "^16.1.2"
     },
     "dependencies": {
+        "masonry-layout": "^4.2.2",
         "primeicons": "^5.0.0",
-        "primevue": "^3.11.0"
+        "primevue": "^3.11.0",
+        "vue-masonry": "^0.14.0"
     }
 }

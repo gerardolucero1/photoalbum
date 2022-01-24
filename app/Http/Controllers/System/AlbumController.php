@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\System;
 
+use Image;
 use Inertia\Inertia;
 use App\Models\Album;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Image;
 use Illuminate\Support\Facades\Storage;
 
 class AlbumController extends Controller
@@ -80,7 +81,8 @@ class AlbumController extends Controller
      */
     public function show($id)
     {
-        
+        $album = Album::with('photos')->find($id);
+        return Inertia::render('System/Albums/Show', compact('album'));
     }
 
     /**
@@ -144,5 +146,41 @@ class AlbumController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function upload(Request $request, $id)
+    {
+        if ($archivo = $request->file('files')) {
+            foreach ($archivo as $file) {
+
+                $image = new Photo();
+                $image->user_id = Auth::user()->id;
+                $image->album_id = $id;
+                $image->description = 'Hi, Binnie!';
+                $image->private = 0;
+
+                $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
+                $thumbName = md5($file->getRealPath() . time());
+                $guessExtension = $file->guessExtension();
+                $path = $file->storeAs('images', $thumbName.'.'.$guessExtension  ,'s3');
+
+                //Guardar thumb
+                $img = Image::make($file);
+                $img->resize(500, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $resource = $img->stream()->detach();
+                Storage::disk('s3')->put(
+                    'images/' . $thumbName.'-thumbnail.'.$guessExtension,
+                    $resource
+                );
+
+                $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
+                $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+
+                $image->save();
+            }
+            
+        }
     }
 }

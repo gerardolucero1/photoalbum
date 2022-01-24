@@ -105,6 +105,9 @@
                                 <Link :href="route('albums.edit', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
                                     <i class="fas fa-pencil-alt"></i>
                                 </Link>
+                                <Link :href="route('albums.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                    <i class="far fa-images"></i>
+                                </Link>
                                 <!-- <button v-tooltip.top="'Asignar curso a puesto'" @click="assingCourseModal(data, index)" class="px-2 py-2 border-blue-300 rounded-md border mr-2">
                                     <i class="fas fa-plus-circle"></i>
                                 </button>
