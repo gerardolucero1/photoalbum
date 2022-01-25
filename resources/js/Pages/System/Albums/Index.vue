@@ -102,22 +102,12 @@
 
                         <Column class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" header="Opciones" headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
                             <template #body="{data}">
-                                <Link :href="route('albums.edit', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                <Link v-tooltip.top="'Editar album'" :href="route('albums.edit', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
                                     <i class="fas fa-pencil-alt"></i>
                                 </Link>
-                                <Link :href="route('albums.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                <Link v-tooltip.top="'Agregar fotos'" :href="route('albums.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
                                     <i class="far fa-images"></i>
                                 </Link>
-                                <!-- <button v-tooltip.top="'Asignar curso a puesto'" @click="assingCourseModal(data, index)" class="px-2 py-2 border-blue-300 rounded-md border mr-2">
-                                    <i class="fas fa-plus-circle"></i>
-                                </button>
-                                <inertia-link v-tooltip.top="'Lecciones del curso'" :href="route('admin.courses.show', data.id)" class="px-2 py-2 border-green-300 rounded-md border mr-2">
-                                    <i class="fas fa-folder-plus"></i>
-                                </inertia-link>
-                                
-                                <button @click="deleteCourse(data, index)" class="px-2 py-2 border-red-300 rounded-md border mr-2">
-                                    <i class="fas fa-trash"></i>
-                                </button> -->
                             </template>
                         </Column>
                     </DataTable>

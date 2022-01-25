@@ -1,4 +1,12 @@
 <style scoped lang="scss">
+    .photo-container{
+        width: 230px;
+
+        img{
+            width: 100%;
+        }
+    }
+
     .uploading{
         width: 200px; 
         height: 200px;
@@ -30,14 +38,14 @@
     <app-layout title="Dashboard">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Crear nuevo album
+                Editar el album {{ photo.name }}
             </h2>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-start bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 flex">
-                    <Link :href="route('albums.index')" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <Link :href="route('albums.show', photo.album.id)" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <i class="fas fa-arrow-left mr-1"></i> Regresar
                     </Link>
                 </div>
@@ -55,9 +63,9 @@
                         <div class="md:grid md:grid-cols-3 md:gap-6">
                             <div class="md:col-span-1">
                                 <div class="px-4 sm:px-0">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Informacion del nuevo album</h3>
+                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Informacion de la foto</h3>
                                     <p class="mt-1 text-sm text-gray-600">
-                                        Agrega la informacion requerida para la creacion de este album.
+                                        Edita la informacion de origen de esta foto
                                     </p>
                                 </div>
                             </div>
@@ -67,25 +75,31 @@
                                         <div class="grid grid-cols-6 gap-6">
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
-                                                <input type="text" v-model="new_album.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                                <input type="text" v-model="photo.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="description" class="block text-sm font-medium text-gray-700">Descripcion</label>
-                                                <textarea rows="5" v-model="new_album.description" name="description" id="description" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                                <textarea rows="5" v-model="photo.description" name="description" id="description" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
-                                                <InputSwitch id="private" v-model="new_album.private" />
+                                                <InputSwitch id="private" v-model="photo.private" />
                                             </div>
-                                            <div class="col-span-6 sm:col-span-6">
+                                             <div class="col-span-6 sm:col-span-6">
                                                 <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
                                                     <template #empty>
                                                         <p>Drag and drop files to here to upload.</p>
                                                     </template>
                                                 </FileUpload>
                                             </div>
-                                            
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <div class="flex justify-center items-center">
+                                                    <div class="photo-container">
+                                                        <Image class="img-tile" :src="photo.url_preview" srcset="" :alt="photo.description" preview />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
@@ -108,6 +122,7 @@
                 <p>Espera un momento...</p>
             </div>
         </Dialog>
+
     </app-layout>
 </template>
 
@@ -118,7 +133,7 @@ import { Link } from '@inertiajs/inertia-vue3';
 
 export default defineComponent({
     props: [
-        'albums'
+        'photo'
     ],
 
     components: {
@@ -126,13 +141,12 @@ export default defineComponent({
         Link,
     },
 
+    created(){
+        this.photo.private == 1 ? this.photo.private = true :  this.photo.private = false
+    },
+
     data(){
         return{
-            new_album: {
-                name: '',
-                private: false,
-            },
-
             uploading: false,
         }
     },
@@ -151,17 +165,18 @@ export default defineComponent({
             this.uploading = true
             console.log($event);
             try {
-                let URL = '/dashboard/albums'
+                let URL = `/dashboard/photos/edit/${this.photo.id}`
 
                 let data = new FormData()
                 
-                data.append('props', JSON.stringify(this.new_album))
+                data.append('props', JSON.stringify(this.photo))
                 data.append("file", $event.files[0]);
+                data.append('_method', 'PUT')
 
 
                 axios.post(URL, data).then(response => {
                     console.log(response);
-                    this.$toast.add({severity:'success', summary: 'Album creado', detail:'Se ha creado un nuevo album', life: 3000});
+                    this.$toast.add({severity:'success', summary: 'Foto editada', detail:'Se ha editado la foto', life: 3000});
                     this.uploading = false
                 }).catch(error => {
                     console.log(error);

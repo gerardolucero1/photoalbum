@@ -17,6 +17,7 @@ class CreatePhotosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('album_id')->nullable();
+            $table->string('name');
             $table->mediumText('description');
             $table->string('url_preview');
             $table->string('url_photo');

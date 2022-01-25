@@ -150,6 +150,8 @@ class AlbumController extends Controller
 
     public function upload(Request $request, $id)
     {
+        $array_images = [];
+
         if ($archivo = $request->file('files')) {
             foreach ($archivo as $file) {
 
@@ -175,12 +177,17 @@ class AlbumController extends Controller
                     $resource
                 );
 
+                $image->name = $file->getClientOriginalName();
+
                 $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
                 $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
 
                 $image->save();
+
+                array_push($array_images, $image);
             }
-            
         }
+
+        return $array_images;
     }
 }

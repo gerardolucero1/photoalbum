@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\System\AlbumController;
+use App\Http\Controllers\System\PhotoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Dashboard'); 
     })->name('dashboard');
 
+    //Albums
     Route::get('/dashboard/albums', [AlbumController::class, 'index'])->name('albums.index');
     Route::get('/dashboard/albums/create', [AlbumController::class, 'create'])->name('albums.create');
     Route::post('/dashboard/albums', [AlbumController::class, 'store'])->name('albums.store');
@@ -38,4 +40,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::put('/dashboard/albums/edit/{id}', [AlbumController::class, 'update'])->name('albums.update');
         Route::post('/dashboard/albums/upload/{id}', [AlbumController::class, 'upload'])->name('albums.upload');
 
+    //Photos
+    Route::get('/dashboard/photos/show/{id}', [PhotoController::class, 'show'])->name('photos.show');
+    Route::get('/dashboard/photos/edit/{id}', [PhotoController::class, 'edit'])->name('photos.edit');
+    Route::put('/dashboard/photos/edit/{id}', [PhotoController::class, 'update'])->name('photos.update');
+    Route::delete('/dashboard/photos/{id}', [PhotoController::class, 'destroy'])->name('photos.destroy');
 });

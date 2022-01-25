@@ -1,5 +1,37 @@
 <style scoped lang="scss">
+    .photo-container{
+        width: 230px;
 
+        img{
+            width: 100%;
+        }
+    }
+
+    .uploading{
+        width: 200px; 
+        height: 200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    @keyframes p-progress-spinner-color {
+        100%,
+        0% {
+            stroke: #d62d20;
+        }
+        40% {
+            stroke: #0057e7;
+        }
+        66% {
+            stroke: #008744;
+        }
+        80%,
+        90% {
+            stroke: #ffa700;
+        }
+    }
 </style>
 
 <template>
@@ -61,7 +93,13 @@
                                                     </template>
                                                 </FileUpload>
                                             </div>
-                                            
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <div class="flex justify-center items-center">
+                                                    <div class="photo-container">
+                                                        <Image class="img-tile" :src="album.photo_url" srcset="" :alt="album.description" preview />
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
@@ -78,6 +116,12 @@
         </div>
 
         <Toast />
+        <Dialog :draggable="false" :dismissableMask="true" :showHeader="false" v-model:visible="uploading" :closable="false" :modal="true">
+            <div class="uploading">
+                <ProgressSpinner />
+                <p>Espera un momento...</p>
+            </div>
+        </Dialog>
     </app-layout>
 </template>
 
@@ -102,7 +146,7 @@ export default defineComponent({
 
     data(){
         return{
-            
+            uploading: false
         }
     },
 
@@ -117,6 +161,7 @@ export default defineComponent({
         },
 
         sendForm($event){
+            this.uploading = true
             console.log($event);
             try {
                 let URL = `/dashboard/albums/edit/${this.album.id}`
@@ -131,13 +176,19 @@ export default defineComponent({
                 axios.post(URL, data).then(response => {
                     console.log(response);
                     this.$toast.add({severity:'success', summary: 'Album editado', detail:'Se ha editado el album', life: 3000});
-                    
+
+                    this.album.photo_url = response.data.photo_url
+                    this.uploading = false
+
+                    this.$refs.uploader.clear()
                 }).catch(error => {
                     console.log(error);
                     this.$toast.add({severity:'error', summary: 'Error', detail:'Ha ocurrido un error', life: 3000});
+                    this.uploading = false
                 })
             } catch (error) {
                 console.log(error);
+                this.uploading = false
             }
         }
     }

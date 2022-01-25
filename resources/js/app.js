@@ -17,6 +17,13 @@ import Toast from 'primevue/toast';
 import FileUpload from 'primevue/fileupload';
 import Galleria from 'primevue/galleria';
 import Image from 'primevue/image';
+import Dialog from 'primevue/dialog';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ProgressSpinner from 'primevue/progressspinner';
+import Button from 'primevue/button';
+import ConfirmationService from 'primevue/confirmationservice';
+import Badge from 'primevue/badge';
+
 
 import { VueMasonryPlugin } from "vue-masonry/src/masonry.plugin";
 
@@ -29,6 +36,7 @@ createInertiaApp({
         return createApp({ render: () => h(app, props) })
             .use(plugin)
             .use(VueMasonryPlugin)
+            .use(ConfirmationService)
             .mixin({ methods: { route } })
             .mixin({ methods: {
                 prevLink(){
@@ -47,6 +55,11 @@ createInertiaApp({
             .component('InputSwitch', InputSwitch)
             .component('Toast', Toast)
             .component('FileUpload', FileUpload)
+            .component('ConfirmDialog', ConfirmDialog)
+            .component('Dialog', Dialog)
+            .component('ProgressSpinner', ProgressSpinner)
+            .component('Button', Button)
+            .component('Badge', Badge)
             .mount(el);
     },
 });
