@@ -25,6 +25,9 @@
                                 <jet-nav-link :href="route('albums.index')" :active="route().current('albums.index')">
                                     Albums
                                 </jet-nav-link>
+                                <jet-nav-link :href="route('sales.index')" :active="route().current('sales.index')">
+                                    Ventas
+                                </jet-nav-link>
                             </div>
                         </div>
 

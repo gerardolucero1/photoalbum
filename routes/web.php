@@ -3,6 +3,7 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
 use App\Http\Controllers\System\PhotoController;
 
@@ -45,4 +46,15 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard/photos/edit/{id}', [PhotoController::class, 'edit'])->name('photos.edit');
     Route::put('/dashboard/photos/edit/{id}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/dashboard/photos/{id}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+
+    //Sales
+    Route::get('/dashboard/sales', [SaleController::class, 'index'])->name('sales.index');
+    Route::get('/dashboard/sales/create', [SaleController::class, 'create'])->name('sales.create');
+    Route::post('/dashboard/sales', [SaleController::class, 'store'])->name('sales.store');
+    Route::get('/dashboard/sales/{id}', [SaleController::class, 'show'])->name('sales.show');
+    Route::get('/dashboard/sales/edit/{id}', [SaleController::class, 'edit'])->name('sales.edit');
+    Route::put('/dashboard/sales/edit/{id}', [SaleController::class, 'update'])->name('sales.update');
+    Route::delete('/dashboard/sales/{id}', [SaleController::class, 'destroy'])->name('sales.destroy');
+        Route::post('/dashboard/sales/upload/{id}', [SaleController::class, 'upload'])->name('sales.upload');
+        Route::post('/dashboard/sales/select-photos', [SaleController::class, 'selectPhotos'])->name('sales.selectPhotos');
 });

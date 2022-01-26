@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class AlbumController extends Controller
+class SaleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,10 +21,8 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        $albums = Album::withCount('photos')->get();
-        $sales = Sale::where('active', 1)->withCount('photos')->get();
-
-        return Inertia::render('System/Albums/Index', compact('albums', 'sales'));
+        $sales = Sale::where('user_id', Auth::user()->id)->withCount('photos')->get();
+        return Inertia::render('System/Sales/Index', compact('sales'));
     }
 
     /**
@@ -34,7 +32,7 @@ class AlbumController extends Controller
      */
     public function create()
     {
-        return Inertia::render('System/Albums/Create');
+        return Inertia::render('System/Sales/Create');
     }
 
     /**
@@ -47,33 +45,16 @@ class AlbumController extends Controller
     {
         $data = json_decode($request->props);
 
-        $album = new Album();
-        $album->user_id = Auth::user()->id;
-        $album->name = $data->name;
-        $album->description = $data->description;
-        $album->private = $data->private;
-        if ($archivo = $request->file('file')) {
-            // Guardar imagen original
-            $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
-            $thumbName = md5($archivo->getRealPath() . time());
-            $guessExtension = $archivo->guessExtension();
+        $sale = new Sale();
+        $sale->user_id = Auth::user()->id;
+        $sale->name = $data->name;
+        $sale->description = $data->description;
+        $sale->price = $data->price;
+        $sale->active = $data->active;
+        $sale->compound_price = $data->compound_price;
+        $sale->save();
 
-            //Guardar thumb
-            $img = Image::make($archivo);
-            $img->resize(500, null, function ($constraint) {
-                $constraint->aspectRatio();
-            });
-            $resource = $img->stream()->detach();
-            Storage::disk('s3')->put(
-                'images/' . $thumbName.'-thumbnail.'.$guessExtension,
-                $resource
-            );
-
-            $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
-        }
-        $album->save();
-
-        return $album;
+        return;
     }
 
     /**
@@ -84,8 +65,8 @@ class AlbumController extends Controller
      */
     public function show($id)
     {
-        $album = Album::with('photos')->find($id);
-        return Inertia::render('System/Albums/Show', compact('album'));
+        $sale = Sale::with('photos')->find($id);
+        return Inertia::render('System/Sales/Show', compact('sale'));
     }
 
     /**
@@ -96,8 +77,8 @@ class AlbumController extends Controller
      */
     public function edit($id)
     {
-        $album = Album::find($id);
-        return Inertia::render('System/Albums/Edit', compact('album'));
+        $sale = Sale::find($id);
+        return Inertia::render('System/Sales/Edit', compact('sale'));
     }
 
     /**
@@ -111,33 +92,15 @@ class AlbumController extends Controller
     {
         $data = json_decode($request->props);
 
-        $album = Album::find($id);
-        $album->user_id = Auth::user()->id;
-        $album->name = $data->name;
-        $album->description = $data->description;
-        $album->private = $data->private;
-        if ($archivo = $request->file('file')) {
-            // Guardar imagen original
-            $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
-            $thumbName = md5($archivo->getRealPath() . time());
-            $guessExtension = $archivo->guessExtension();
+        $sale = Sale::find($id);
+        $sale->name = $data->name;
+        $sale->description = $data->description;
+        $sale->price = $data->price;
+        $sale->active = $data->active;
+        $sale->compound_price = $data->compound_price;
+        $sale->save();
 
-            //Guardar thumb
-            $img = Image::make($archivo);
-            $img->resize(500, null, function ($constraint) {
-                $constraint->aspectRatio();
-            });
-            $resource = $img->stream()->detach();
-            Storage::disk('s3')->put(
-                'images/' . $thumbName.'-thumbnail.'.$guessExtension,
-                $resource
-            );
-
-            $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
-        }
-        $album->save();
-
-        return $album;
+        return;
     }
 
     /**
@@ -148,19 +111,35 @@ class AlbumController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $sale = Sale::find($id);
+        $sale->delete();
+
+        return;
+    }
+
+    public function selectPhotos(Request $request)
+    {
+        $album = Album::find($request->album_id);
+        $sale = Sale::find($request->sale_id);
+
+        $sale->photos()->syncWithoutDetaching($album->photos);
+
+        $sale = Sale::withCount('photos')->find($request->sale_id);
+
+        return $sale;
     }
 
     public function upload(Request $request, $id)
     {
         $array_images = [];
+        $array_ids = [];
 
         if ($archivo = $request->file('files')) {
             foreach ($archivo as $file) {
 
                 $image = new Photo();
                 $image->user_id = Auth::user()->id;
-                $image->album_id = $id;
+                $image->album_id = null;
                 $image->description = 'Hi, Binnie!';
                 $image->private = 0;
 
@@ -188,8 +167,12 @@ class AlbumController extends Controller
                 $image->save();
 
                 array_push($array_images, $image);
+                array_push($array_ids, $image->id);
             }
         }
+
+        $sale = Sale::find($id);
+        $sale->photos()->syncWithoutDetaching($array_ids);
 
         return $array_images;
     }

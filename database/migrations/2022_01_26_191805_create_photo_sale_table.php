@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesTable extends Migration
+class CreatePhotoSaleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateSalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('photo_sale', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('name');
-            $table->mediumText('description');
-            $table->string('price');
-            $table->boolean('compound_price')->default(0);
-            $table->boolean('active')->default(0);
+            $table->unsignedBigInteger('photo_id');
+            $table->unsignedBigInteger('sale_id');
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ class CreateSalesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('photo_sale');
     }
 }

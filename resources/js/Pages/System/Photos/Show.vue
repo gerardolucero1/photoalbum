@@ -51,9 +51,13 @@
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex justify-start bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 flex">
-                    <Link :href="route('albums.show', photo.album.id)" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <Link v-if="photo.album" :href="route('albums.show', photo.album.id)" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         <i class="fas fa-arrow-left mr-1"></i> Regresar
                     </Link>
+                    <Link v-else @click="goBack" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-arrow-left mr-1"></i> Regresar
+                    </Link>
+
                 </div>
             </div>
 
@@ -172,6 +176,10 @@ export default defineComponent({
                 console.log(error);
                 this.uploading = false
             }
+        },
+
+        goBack(){
+            window.history.back()
         }
     }
 
