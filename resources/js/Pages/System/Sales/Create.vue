@@ -30,7 +30,7 @@
     <app-layout title="Dashboard">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Crear nueva venta
+                Crear nuevo paquete
             </h2>
         </template>
 
@@ -55,9 +55,9 @@
                         <div class="md:grid md:grid-cols-3 md:gap-6">
                             <div class="md:col-span-1">
                                 <div class="px-4 sm:px-0">
-                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Informacion de la venta</h3>
+                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Informacion del paquete</h3>
                                     <p class="mt-1 text-sm text-gray-600">
-                                        Agrega la informacion requerida para la creacion de esta venta.
+                                        Agrega la informacion requerida para la creacion de este paquete.
                                     </p>
                                 </div>
                             </div>
@@ -75,16 +75,12 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
-                                                <label for="name" class="block text-sm font-medium text-gray-700">Precio</label>
-                                                <input type="text" v-model="new_sale.price" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                                            </div>
-                                            <div class="col-span-6 sm:col-span-6">
-                                                <label for="private" class="block text-sm font-medium text-gray-700">Venta activa</label>
+                                                <label for="private" class="block text-sm font-medium text-gray-700">Activo</label>
                                                 <InputSwitch id="private" v-model="new_sale.active" />
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
-                                                <label for="private" class="block text-sm font-medium text-gray-700">Precio compuesto</label>
-                                                <InputSwitch id="private" v-model="new_sale.compound_price" />
+                                                <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+                                                <input type="number" v-model="new_sale.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                             </div>
                                         </div>
                                     </div>
@@ -130,6 +126,7 @@ export default defineComponent({
         return{
             new_sale: {
                 name: '',
+                password: '',
                 active: false,
                 compound_price: false,
             },
@@ -151,7 +148,7 @@ export default defineComponent({
 
                 axios.post(URL, data).then(response => {
                     console.log(response);
-                    this.$toast.add({severity:'success', summary: 'Venta creada', detail:'Se ha creado una nueva venta', life: 3000});
+                    this.$toast.add({severity:'success', summary: 'paquete creado', detail:'Se ha creado un nuevo paquete', life: 3000});
                     this.uploading = false
                 }).catch(error => {
                     console.log(error);

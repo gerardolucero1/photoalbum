@@ -26,7 +26,10 @@
                                     Albums
                                 </jet-nav-link>
                                 <jet-nav-link :href="route('sales.index')" :active="route().current('sales.index')">
-                                    Ventas
+                                    Paquetes
+                                </jet-nav-link>
+                                <jet-nav-link :href="route('photos.index')" :active="route().current('photos.index')">
+                                    Fotografias
                                 </jet-nav-link>
                             </div>
                         </div>

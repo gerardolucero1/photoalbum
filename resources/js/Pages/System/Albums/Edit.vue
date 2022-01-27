@@ -83,8 +83,30 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+                                                <input type="number" v-model="album.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="active" class="block text-sm font-medium text-gray-700">Activo</label>
+                                                <InputSwitch id="active" v-model="album.active" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
                                                 <InputSwitch id="private" v-model="album.private" />
+
+                                                <div class="mt-2">
+                                                    <p v-if="album.private" class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
+                                                    <p v-else class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
+                                                <vue-tags-input
+                                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    v-model="tag"
+                                                    :tags="tags"
+                                                    @tags-changed="newTags => tags = newTags"
+                                                    />
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
@@ -129,6 +151,7 @@
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
+import VueTagsInput from '@sipec/vue3-tags-input';
 
 export default defineComponent({
     props: [
@@ -138,15 +161,19 @@ export default defineComponent({
     components: {
         AppLayout,
         Link,
+        VueTagsInput
     },
 
     created(){
         this.album.private == 1 ? this.album.private = true :  this.album.private = false
+        this.album.active == 1 ? this.album.active = true :  this.album.active = false
     },
 
     data(){
         return{
-            uploading: false
+            uploading: false,
+            tag: '',
+            tags: [],
         }
     },
 
@@ -162,7 +189,8 @@ export default defineComponent({
 
         sendForm($event){
             this.uploading = true
-            console.log($event);
+            this.album.tags = this.tags.map(doc => doc.text);
+            
             try {
                 let URL = `/dashboard/albums/edit/${this.album.id}`
 

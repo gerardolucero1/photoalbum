@@ -17,9 +17,8 @@ class CreateSalesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('name');
+            $table->string('price')->nullable();
             $table->mediumText('description');
-            $table->string('price');
-            $table->boolean('compound_price')->default(0);
             $table->boolean('active')->default(0);
             $table->timestamps();
         });

@@ -42,10 +42,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         Route::post('/dashboard/albums/upload/{id}', [AlbumController::class, 'upload'])->name('albums.upload');
 
     //Photos
+    Route::get('/dashboard/photos', [PhotoController::class, 'index'])->name('photos.index');
     Route::get('/dashboard/photos/show/{id}', [PhotoController::class, 'show'])->name('photos.show');
     Route::get('/dashboard/photos/edit/{id}', [PhotoController::class, 'edit'])->name('photos.edit');
     Route::put('/dashboard/photos/edit/{id}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/dashboard/photos/{id}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+        Route::post('/dashboard/photos/upload', [PhotoController::class, 'upload'])->name('photos.upload');
 
     //Sales
     Route::get('/dashboard/sales', [SaleController::class, 'index'])->name('sales.index');
@@ -55,6 +57,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard/sales/edit/{id}', [SaleController::class, 'edit'])->name('sales.edit');
     Route::put('/dashboard/sales/edit/{id}', [SaleController::class, 'update'])->name('sales.update');
     Route::delete('/dashboard/sales/{id}', [SaleController::class, 'destroy'])->name('sales.destroy');
+    Route::put('/dashboard/sales/change-password/{id}', [SaleController::class, 'changePassword'])->name('albums.changePassword');
         Route::post('/dashboard/sales/upload/{id}', [SaleController::class, 'upload'])->name('sales.upload');
         Route::post('/dashboard/sales/select-photos', [SaleController::class, 'selectPhotos'])->name('sales.selectPhotos');
 });

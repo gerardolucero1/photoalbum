@@ -89,6 +89,15 @@
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
                                                 <InputSwitch id="private" v-model="photo.private" />
                                             </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
+                                                <vue-tags-input
+                                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    v-model="tag"
+                                                    :tags="tags"
+                                                    @tags-changed="newTags => tags = newTags"
+                                                    />
+                                            </div>
                                              <div class="col-span-6 sm:col-span-6">
                                                 <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
                                                     <template #empty>
@@ -133,6 +142,7 @@
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
+import VueTagsInput from '@sipec/vue3-tags-input';
 
 export default defineComponent({
     props: [
@@ -142,15 +152,25 @@ export default defineComponent({
     components: {
         AppLayout,
         Link,
+        VueTagsInput
     },
 
     created(){
         this.photo.private == 1 ? this.photo.private = true :  this.photo.private = false
+
+        this.tags = this.photo.tags.map(doc => {
+            let tag = {
+                text: doc.name.en
+            }
+            return tag
+        })
     },
 
     data(){
         return{
             uploading: false,
+            tag: '',
+            tags: [],
         }
     },
 
@@ -166,7 +186,8 @@ export default defineComponent({
 
         sendForm($event){
             this.uploading = true
-            console.log($event);
+            this.photo.tags = this.tags.map(doc => doc.text);
+
             try {
                 let URL = `/dashboard/photos/edit/${this.photo.id}`
 

@@ -84,6 +84,13 @@
                                 <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by name"/>
                             </template>
                         </Column>
+                        <Column field="price" header="Precio" sortable style="min-width: 11rem">
+                            <template #body="{data}">
+                                <div class="text-sm text-gray-900">
+                                    {{ data.price }}
+                                </div>
+                            </template>
+                        </Column>
                         <Column field="photos_count" header="Cantidad de fotos" sortable style="min-width: 14rem">
                             <template #body="{data}">
                                 <div class="text-sm text-gray-900">
@@ -91,10 +98,18 @@
                                 </div>
                             </template>
                         </Column>
-                        <Column field="private" header="Privado" sortable style="min-width: 14rem">
+                        <Column field="private" header="Privado" sortable style="min-width: 8rem">
                             <template #body="{data}">
                                 <div class="text-sm text-gray-900">
                                     <span v-if="data.private">Si</span>
+                                    <span v-else>No</span>
+                                </div>
+                            </template>
+                        </Column>
+                        <Column field="active" header="Activo" sortable style="min-width: 8rem">
+                            <template #body="{data}">
+                                <div class="text-sm text-gray-900">
+                                    <span v-if="data.active">Si</span>
                                     <span v-else>No</span>
                                 </div>
                             </template>
@@ -108,8 +123,8 @@
                                 <Link v-tooltip.top="'Agregar fotos'" :href="route('albums.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
                                     <i class="far fa-images"></i>
                                 </Link>
-                                <button @click="putSale(data)" v-tooltip.top="'Agregar a venta'" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
-                                    <i class="fas fa-cart-arrow-down"></i>
+                                <button @click="putSale(data)" v-tooltip.top="'Agregar a paquete'" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                    <i class="fas fa-boxes"></i>
                                 </button>
                             </template>
                         </Column>
@@ -119,14 +134,12 @@
         </div>
 
         <Sidebar v-model:visible="sidebar" :baseZIndex="1000" position="right">
-            <h3 class="text-2xl font-bold">Ventas activas</h3>
+            <h3 class="text-2xl font-bold">Paquetes activos</h3>
 
             <ul class="mt-4">
                 <li v-for="(sale, index) in sales" :key="index" class="mb-2" @click="selectSale(sale)">
                     <div class="flex items-center hover:bg-gray-50 p-2 hover:cursor-pointer">
-                        <div class="flex-shrink-0 h-10 w-10">
-                            <img class="h-10 w-10 rounded-full" src="https://images.vexels.com/media/users/3/205437/isolated/preview/1d84c7d31a188b47fe75640a85af8d9c-icono-de-trazo-de-venta-de-compras-en-linea.png" alt="" />
-                        </div>
+                        <i class="fas fa-box text-2xl"></i>
                         <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">
                             {{ sale.name }}
@@ -181,7 +194,7 @@ export default defineComponent({
         selectSale(sale){
             this.$confirm.require({
                 message: `¿Quieres agregar el contenido de este album a ${sale.name}?`,
-                header: 'Seleccionar venta',
+                header: 'Seleccionar paquete',
                 icon: 'pi pi-info-circle',
                 acceptClass: 'p-button-info',
                 accept: () => {

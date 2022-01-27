@@ -161,19 +161,11 @@
     <app-layout title="Dashboard">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Estas viendo {{ sale.name }}
+                Fotografias
             </h2>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex justify-start bg-white overflow-hidden shadow-xl sm:rounded-lg p-2 flex">
-                    <Link :href="route('sales.index')" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <i class="fas fa-arrow-left mr-1"></i> Regresar
-                    </Link>
-                </div>
-            </div>
-
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="true" :auto="false" :fileLimit="10" :showUploadButton="true" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
@@ -187,7 +179,7 @@
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg pb-4">
                     <section ref="gallery" class="grid-container" :key="index">
 
-                        <Galleria :value="sale.photos" v-model:activeIndex="activeIndex" thumbnailsPosition="left" :responsiveOptions="responsiveOptions" :numVisible="7" containerStyle="max-width: 850px"
+                        <Galleria :value="photos" v-model:activeIndex="activeIndex" thumbnailsPosition="left" :responsiveOptions="responsiveOptions" :numVisible="7" containerStyle="max-width: 850px"
                             :circular="true" :fullScreen="true" :showItemNavigators="true" :showThumbnails="false" v-model:visible="displayCustom">
                             <template #item="slotProps">
                                 <img :src="slotProps.item.url_photo" :alt="slotProps.item.description" style="width: 100%; display: block;" />
@@ -202,23 +194,23 @@
                         </Galleria>
 
                         <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
-                            <div class="image-container item" v-for="(image, index) in sale.photos" :key="image.url_preview">
+                            <div class="image-container item" v-for="(image, index) in photos" :key="image.url_preview">
                                 <div class="image-container-info-img" @click="imageClick(index)">
                                     <img v-masonry-tile class="img-tile shadow-md rounded-md" :src="image.url_preview" srcset="" :alt="image.description" />
                                 </div>
     
                                 <div class="options-tile">
                                     <Link :href="route('photos.show', image.id)">
-                                        <button class="bg-pink-500 text-neutral-50 shadow-md" >
+                                        <button class="bg-pink-500 text-neutral-50 shadow-md " >
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </Link>
                                     <Link :href="route('photos.edit', image.id)">
-                                        <button class="bg-indigo-600 text-neutral-50 shadow-md" >
+                                        <button class="bg-indigo-600 text-neutral-50 shadow-md " >
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                     </Link>
-                                    <button class="bg-red-500 text-neutral-50 shadow-md" @click="deletePhoto(image, index)">
+                                    <button class="bg-red-500 text-neutral-50 shadow-md " @click="deletePhoto(image, index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -249,7 +241,7 @@ import Masonry from "masonry-layout";
 
 export default defineComponent({
     props: [
-        'sale'
+        'photos'
     ],
 
     components: {
@@ -288,13 +280,6 @@ export default defineComponent({
     },
 
     methods: {
-        onImageRightClick(image, e) {
-            console.log(image);
-            console.log(e);
-
-            this.$refs[`_menu${image.id}`][0].show(e);
-        },
-
         imageClick(index) {
             this.activeIndex = index;
             this.displayCustom = true;
@@ -335,7 +320,7 @@ export default defineComponent({
         sendForm($event){
             this.uploading = true
             try {
-                let URL = `/dashboard/sales/upload/${this.sale.id}`
+                let URL = `/dashboard/photos/upload`
 
                 let data = new FormData()
                 
@@ -347,7 +332,7 @@ export default defineComponent({
                     console.log(response);
                     this.$toast.add({severity:'success', summary: 'Fotos cargadas', detail:'Se han cargado las nuevas fotos', life: 3000});
                     response.data.forEach(doc => {
-                        this.sale.photos.push(doc)
+                        this.photos.push(doc)
                     })
 
                     this.$refs.uploader.clear()

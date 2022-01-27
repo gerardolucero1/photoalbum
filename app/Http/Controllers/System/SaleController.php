@@ -10,6 +10,7 @@ use App\Models\Photo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class SaleController extends Controller
@@ -49,9 +50,9 @@ class SaleController extends Controller
         $sale->user_id = Auth::user()->id;
         $sale->name = $data->name;
         $sale->description = $data->description;
-        $sale->price = $data->price;
         $sale->active = $data->active;
-        $sale->compound_price = $data->compound_price;
+        $sale->price = $data->price;
+
         $sale->save();
 
         return;
@@ -95,9 +96,8 @@ class SaleController extends Controller
         $sale = Sale::find($id);
         $sale->name = $data->name;
         $sale->description = $data->description;
-        $sale->price = $data->price;
         $sale->active = $data->active;
-        $sale->compound_price = $data->compound_price;
+        $sale->price = $data->price;
         $sale->save();
 
         return;
@@ -175,5 +175,16 @@ class SaleController extends Controller
         $sale->photos()->syncWithoutDetaching($array_ids);
 
         return $array_images;
+    }
+
+    public function changePassword(Request $request, $id)
+    {
+        if ($request->password) {
+            $sale = Sale::find($id);
+            $sale->password = Hash::make($request->password);
+            $sale->save();
+        }
+
+        return;
     }
 }

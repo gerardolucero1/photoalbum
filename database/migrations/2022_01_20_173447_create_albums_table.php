@@ -20,6 +20,8 @@ class CreateAlbumsTable extends Migration
             $table->mediumText('description');
             $table->string('photo_url');
             $table->boolean('private')->default(0);
+            $table->boolean('active')->default(0);
+            $table->string('price')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')

@@ -52,6 +52,9 @@ class AlbumController extends Controller
         $album->name = $data->name;
         $album->description = $data->description;
         $album->private = $data->private;
+        $album->active = $data->active;
+        $album->price = $data->price;
+
         if ($archivo = $request->file('file')) {
             // Guardar imagen original
             $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
@@ -116,6 +119,9 @@ class AlbumController extends Controller
         $album->name = $data->name;
         $album->description = $data->description;
         $album->private = $data->private;
+        $album->active = $data->active;
+        $album->price = $data->price;
+        
         if ($archivo = $request->file('file')) {
             // Guardar imagen original
             $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
@@ -134,6 +140,10 @@ class AlbumController extends Controller
             );
 
             $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
+        }
+        $album->photos()->update([ 'private' => $data->private ]);
+        foreach ($album->photos as $photo) {
+            $photo->syncTags($data->tags);
         }
         $album->save();
 
@@ -154,6 +164,7 @@ class AlbumController extends Controller
     public function upload(Request $request, $id)
     {
         $array_images = [];
+        $album = album::find($id);
 
         if ($archivo = $request->file('files')) {
             foreach ($archivo as $file) {
@@ -162,7 +173,7 @@ class AlbumController extends Controller
                 $image->user_id = Auth::user()->id;
                 $image->album_id = $id;
                 $image->description = 'Hi, Binnie!';
-                $image->private = 0;
+                $image->private = $album->private;
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());

@@ -16,6 +16,7 @@
             img{
                 width: 210px;
                 height: 100%;
+                width: 210px;
                 cursor: pointer;
             }
 
@@ -43,10 +44,6 @@
                 }
             }
         }
-    }
-
-    .img-tile{
-        width: 210px;
     }
 
     .uploading{
@@ -185,20 +182,20 @@
                         <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
                             <div class="image-container item" v-for="(image, index) in album.photos" :key="image.url_preview">
                                 <div class="image-container-info-img" @click="imageClick(index)">
-                                    <img v-masonry-tile class="img-tile" :src="image.url_preview" srcset="" :alt="image.description" />
+                                    <img v-masonry-tile class="img-tile shadow-md rounded-md" :src="image.url_preview" srcset="" :alt="image.description" />
                                 </div>
                                 <div class="options-tile">
                                     <Link :href="route('photos.show', image.id)">
-                                        <button class="bg-pink-500 text-neutral-50" >
+                                        <button class="bg-pink-500 text-neutral-50 shadow-md" >
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </Link>
                                     <Link :href="route('photos.edit', image.id)">
-                                        <button class="bg-indigo-600 text-neutral-50" >
+                                        <button class="bg-indigo-600 text-neutral-50 shadow-md" >
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                     </Link>
-                                    <button class="bg-red-500 text-neutral-50" @click="deletePhoto(image, index)">
+                                    <button class="bg-red-500 text-neutral-50 shadow-md" @click="deletePhoto(image, index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>

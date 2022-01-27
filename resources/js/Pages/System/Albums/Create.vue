@@ -75,8 +75,21 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+                                                <input type="number" v-model="new_album.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="active" class="block text-sm font-medium text-gray-700">Activo</label>
+                                                <InputSwitch id="active" v-model="new_album.active" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
                                                 <InputSwitch id="private" v-model="new_album.private" />
+
+                                                <div class="mt-2">
+                                                    <p v-if="new_album.private" class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
+                                                    <p v-else class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
+                                                </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
