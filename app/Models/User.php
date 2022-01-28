@@ -7,6 +7,7 @@ use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -61,6 +62,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * Get all of the photos for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(Photo::class);
+    }
+
+    /**
      * Get all of the sales for the User
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -68,5 +79,15 @@ class User extends Authenticatable
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    /**
+     * Get the profile associated with the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 }

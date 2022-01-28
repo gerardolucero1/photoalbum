@@ -25,6 +25,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import Badge from 'primevue/badge';
 import Sidebar from 'primevue/sidebar';
 import ContextMenu from 'primevue/contextmenu';
+import ProgressBar from 'primevue/progressbar';
 
 
 import { VueMasonryPlugin } from "vue-masonry/src/masonry.plugin";
@@ -64,6 +65,7 @@ createInertiaApp({
             .component('Badge', Badge)
             .component('Sidebar', Sidebar)
             .component('ContextMenu', ContextMenu)
+            .component('ProgressBar', ProgressBar)
             .mount(el);
     },
 });

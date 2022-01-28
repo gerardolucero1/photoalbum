@@ -163,6 +163,14 @@ class AlbumController extends Controller
 
     public function upload(Request $request, $id)
     {
+        $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+        
+        if ($request->size / 1000000 > $free_disk) {
+            return response([
+                'message' => 'Espacio en disco excedido.'
+            ], 500); 
+        }
+        
         $array_images = [];
         $album = album::find($id);
 
@@ -174,6 +182,7 @@ class AlbumController extends Controller
                 $image->album_id = $id;
                 $image->description = 'Hi, Binnie!';
                 $image->private = $album->private;
+                $image->size = $file->getSize();
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\System;
 
 use Image;
+use App\Models\Sale;
 use Inertia\Inertia;
 use App\Models\Photo;
 use Illuminate\Http\Request;
@@ -52,7 +53,7 @@ class PhotoController extends Controller
      */
     public function show($id)
     {
-        $photo = Photo::with('album')->find($id);
+        $photo = Photo::with(['album', 'tags'])->find($id);
         return Inertia::render('System/Photos/Show', compact('photo'));
     }
 
@@ -82,9 +83,20 @@ class PhotoController extends Controller
         $photo = Photo::find($id);
         $photo->name = $data->name;
         $photo->description = $data->description;
+        $photo->single_sale = $data->single_sale;
+        $photo->price = $data->price;
+       
         $photo->private = $data->private;
         
         if ($archivo = $request->file('file')) {
+            $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+        
+            if ($request->size / 1000000 > $free_disk) {
+                return response([
+                    'message' => 'Espacio en disco excedido.'
+                ], 500); 
+            }
+
             $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
             $thumbName = md5($archivo->getRealPath() . time());
             $guessExtension = $archivo->guessExtension();
@@ -101,6 +113,7 @@ class PhotoController extends Controller
                 $resource
             );
 
+            $photo->size = $archivo->getSize();
             $photo->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
             $photo->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
 
@@ -125,8 +138,33 @@ class PhotoController extends Controller
         return;
     }
 
+    public function destroySale($id, $idSale)
+    {
+        $photo = Photo::find($id);
+        $sale = Sale::find($idSale);
+        $sale->photos()->detach($photo->id);
+        // 
+
+        // if(is_null($photo->album)){
+        //     $photo->delete();
+        // }else{
+        //     $sale = Sale::find($idSale);
+        //     $sale->photos()->detach($photo->id);
+        // }
+
+        return;
+    }
+
     public function upload(Request $request)
     {
+        $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+        
+        if ($request->size / 1000000 > $free_disk) {
+            return response([
+                'message' => 'Espacio en disco excedido.'
+            ], 500); 
+        }
+
         $array_images = [];
 
         if ($archivo = $request->file('files')) {
@@ -137,6 +175,7 @@ class PhotoController extends Controller
                 $image->album_id = null;
                 $image->description = 'Hi, Binnie!';
                 $image->private = 0;
+                $image->size = $file->getSize();
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());

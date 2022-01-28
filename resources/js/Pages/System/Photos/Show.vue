@@ -72,7 +72,7 @@
                     <div class="">
                         <div class="md:grid md:grid-cols-12 md:gap-6">
                             <div class="md:col-span-6">
-                                <img style="width: 100%;" class="img-tile" :src="photo.url_preview" srcset="" :alt="photo.description" preview />
+                                <img style="width: 100%;" class="img-tile shadow-xl" :src="photo.url_preview" srcset="" :alt="photo.description" preview />
                             </div>
                             <div class="mt-5 md:mt-0 md:col-span-6">
                                 <div class="shadow overflow-hidden sm:rounded-md">
@@ -80,6 +80,7 @@
                                         <div class="grid grid-cols-6 gap-6">
                                             <div class="col-span-6 sm:col-span-6">
                                                 <h1 class="text-2xl font-bold">{{ photo.name }}</h1>
+                                                <h2 class="text-xl font-extralight mt-2" v-if="photo.single_sale">${{ photo.price }}</h2>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <p class="font-extralight">{{ photo.description }}</p>
@@ -88,7 +89,10 @@
                                                 <Badge value="Privada" severity="warning" v-if="photo.private"></Badge>
                                                 <Badge value="Publica" severity="success" v-else></Badge>
                                             </div>
-                                            
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <h4 class="font-bold">Etiquetas:</h4>
+                                                <Badge class="mr-1" v-for="(tag, index) in photo.tags" :key="index" :value="tag.name.en" severity="warning"></Badge>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">

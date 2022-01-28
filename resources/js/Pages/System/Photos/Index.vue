@@ -321,12 +321,16 @@ export default defineComponent({
             this.uploading = true
             try {
                 let URL = `/dashboard/photos/upload`
-
+                
+                let size = 0
                 let data = new FormData()
                 
                 for (let i = 0; i < $event.files.length; i++) {
+                    size = size + $event.files[i].size
                     data.append("files[" + i + "]", $event.files[i]);
                 }
+
+                data.append('size', size)
 
                 axios.post(URL, data).then(response => {
                     console.log(response);
@@ -338,8 +342,13 @@ export default defineComponent({
                     this.$refs.uploader.clear()
                     this.uploading = false
                 }).catch(error => {
-                    console.log(error);
-                    this.$toast.add({severity:'error', summary: 'Error', detail:'Ha ocurrido un error', life: 3000});
+                    console.log(error.response.data);
+                    if (error.response.data.message) {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: error.response.data.message, life: 3000});
+                    }else{
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'Ha ocurrido un error', life: 3000});
+                    }
+                    
                     this.uploading = false
                 })
             } catch (error) {

@@ -90,6 +90,14 @@
                                                 <InputSwitch id="private" v-model="photo.private" />
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="single_sale" class="block text-sm font-medium text-gray-700">Venta individual</label>
+                                                <InputSwitch id="single_sale" v-model="photo.single_sale" />
+                                            </div>
+                                            <div v-if="photo.single_sale" class="col-span-6 sm:col-span-6">
+                                                <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
+                                                <input type="number" v-model="photo.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
                                                 <vue-tags-input
                                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -157,6 +165,7 @@ export default defineComponent({
 
     created(){
         this.photo.private == 1 ? this.photo.private = true :  this.photo.private = false
+        this.photo.single_sale == 1 ? this.photo.single_sale = true :  this.photo.single_sale = false
 
         this.tags = this.photo.tags.map(doc => {
             let tag = {
@@ -188,6 +197,8 @@ export default defineComponent({
             this.uploading = true
             this.photo.tags = this.tags.map(doc => doc.text);
 
+            this.photo.single_sale == false ? this.photo.price = null : this.photo.price = this.photo.price
+
             try {
                 let URL = `/dashboard/photos/edit/${this.photo.id}`
 
@@ -195,6 +206,7 @@ export default defineComponent({
                 
                 data.append('props', JSON.stringify(this.photo))
                 data.append("file", $event.files[0]);
+                data.append("size", $event.files[0].size);
                 data.append('_method', 'PUT')
 
 
@@ -204,7 +216,11 @@ export default defineComponent({
                     this.uploading = false
                 }).catch(error => {
                     console.log(error);
-                    this.$toast.add({severity:'error', summary: 'Error', detail:'Ha ocurrido un error', life: 3000});
+                    if (error.response.data.message) {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: error.response.data.message, life: 3000});
+                    }else{
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'Ha ocurrido un error', life: 3000});
+                    }
                     this.uploading = false
                 })
             } catch (error) {

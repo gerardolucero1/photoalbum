@@ -66,7 +66,7 @@ class SaleController extends Controller
      */
     public function show($id)
     {
-        $sale = Sale::with('photos')->find($id);
+        $sale = Sale::with('photos.album')->find($id);
         return Inertia::render('System/Sales/Show', compact('sale'));
     }
 
@@ -131,6 +131,14 @@ class SaleController extends Controller
 
     public function upload(Request $request, $id)
     {
+        $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+        
+        if ($request->size / 1000000 > $free_disk) {
+            return response([
+                'message' => 'Espacio en disco excedido.'
+            ], 500); 
+        }
+        
         $array_images = [];
         $array_ids = [];
 
@@ -142,6 +150,7 @@ class SaleController extends Controller
                 $image->album_id = null;
                 $image->description = 'Hi, Binnie!';
                 $image->private = 0;
+                $image->size = $file->getSize();
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());

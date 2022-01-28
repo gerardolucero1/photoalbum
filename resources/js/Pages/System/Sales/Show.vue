@@ -219,7 +219,7 @@
                                         </button>
                                     </Link>
                                     <button class="bg-red-500 text-neutral-50 shadow-md" @click="deletePhoto(image, index)">
-                                        <i class="fas fa-trash-alt"></i>
+                                        <i class="fas fa-folder-minus"></i>
                                     </button>
                                 </div>
                             </div>
@@ -306,17 +306,19 @@ export default defineComponent({
         },
 
         deletePhoto(image, index){
+
+            let message = image.album != null ? `La imagen seguira en el album ${image.album.name}` : 'La imagen estara en la seccion de fotografias'
             this.$confirm.require({
-                message: `¿Quieres eliminar esta foto?`,
-                header: 'Eliminar',
+                message: message,
+                header: 'Desvincular imagen',
                 icon: 'pi pi-info-circle',
                 acceptClass: 'p-button-danger',
                 accept: () => {
                     try {
-                        let URL = `/dashboard/photos/${image.id}`
+                        let URL = `/dashboard/photos/sale/${image.id}/${this.sale.id}`
 
                         axios.delete(URL).then(response => {
-                            this.album.photos.splice(index, 1)
+                            this.sale.photos.splice(index, 1)
                             this.$toast.add({severity:'info', summary:'Eliminada', detail:'La foto ha sido eliminada', life: 3000});
                         }).catch(error => {
                             console.log(error);
@@ -337,11 +339,14 @@ export default defineComponent({
             try {
                 let URL = `/dashboard/sales/upload/${this.sale.id}`
 
+                let size = 0
                 let data = new FormData()
                 
                 for (let i = 0; i < $event.files.length; i++) {
+                    size = size + $event.files[i].size
                     data.append("files[" + i + "]", $event.files[i]);
                 }
+                data.append('size', size)
 
                 axios.post(URL, data).then(response => {
                     console.log(response);
@@ -354,7 +359,11 @@ export default defineComponent({
                     this.uploading = false
                 }).catch(error => {
                     console.log(error);
-                    this.$toast.add({severity:'error', summary: 'Error', detail:'Ha ocurrido un error', life: 3000});
+                    if (error.response.data.message) {
+                        this.$toast.add({severity:'error', summary: 'Error', detail: error.response.data.message, life: 3000});
+                    }else{
+                        this.$toast.add({severity:'error', summary: 'Error', detail: 'Ha ocurrido un error', life: 3000});
+                    }
                     this.uploading = false
                 })
             } catch (error) {

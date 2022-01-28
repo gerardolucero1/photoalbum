@@ -6,6 +6,7 @@ use Illuminate\Foundation\Application;
 use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
 use App\Http\Controllers\System\PhotoController;
+use App\Http\Controllers\System\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
         return Inertia::render('Dashboard'); 
     })->name('dashboard');
 
+    //Profile
+    Route::get('/dashboard/profiles/get-total-size', [ProfileController::class, 'getSize'])->name('profiles.getSize');
+    Route::put('/dashboard/profiles/edit/{id}', [ProfileController::class, 'update'])->name('profiles.update');
+
     //Albums
     Route::get('/dashboard/albums', [AlbumController::class, 'index'])->name('albums.index');
     Route::get('/dashboard/albums/create', [AlbumController::class, 'create'])->name('albums.create');
@@ -47,6 +52,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard/photos/edit/{id}', [PhotoController::class, 'edit'])->name('photos.edit');
     Route::put('/dashboard/photos/edit/{id}', [PhotoController::class, 'update'])->name('photos.update');
     Route::delete('/dashboard/photos/{id}', [PhotoController::class, 'destroy'])->name('photos.destroy');
+    Route::delete('/dashboard/photos/sale/{id}/{idSale}', [PhotoController::class, 'destroySale'])->name('photos.destroySale');
         Route::post('/dashboard/photos/upload', [PhotoController::class, 'upload'])->name('photos.upload');
 
     //Sales
