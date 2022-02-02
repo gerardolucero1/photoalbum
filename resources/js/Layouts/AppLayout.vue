@@ -31,6 +31,9 @@
                                 <jet-nav-link :href="route('photos.index')" :active="route().current('photos.index')">
                                     Fotografias
                                 </jet-nav-link>
+                                <jet-nav-link :href="route('suscription.index')" :active="route().current('suscription.index')">
+                                    Suscripcion
+                                </jet-nav-link>
                             </div>
                         </div>
 

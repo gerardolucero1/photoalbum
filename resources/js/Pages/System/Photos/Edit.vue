@@ -206,7 +206,10 @@ export default defineComponent({
                 
                 data.append('props', JSON.stringify(this.photo))
                 data.append("file", $event.files[0]);
-                data.append("size", $event.files[0].size);
+                if ($event.files[0]) {
+                    data.append("size", $event.files[0].size);
+                }
+                
                 data.append('_method', 'PUT')
 
 

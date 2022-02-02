@@ -7,13 +7,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Tags\HasTags;
+use Laravel\Scout\Searchable;
 
 class Photo extends Model
 {
     use HasFactory;
     use HasTags;
+    use Searchable;
 
     protected $guarded = [];
+
 
     /**
      * Get the user that owns the Photo

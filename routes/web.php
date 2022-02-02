@@ -1,12 +1,15 @@
 <?php
 
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\Web\IndexController;
 use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
 use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\ProfileController;
+use App\Http\Controllers\System\SuscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +57,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::delete('/dashboard/photos/{id}', [PhotoController::class, 'destroy'])->name('photos.destroy');
     Route::delete('/dashboard/photos/sale/{id}/{idSale}', [PhotoController::class, 'destroySale'])->name('photos.destroySale');
         Route::post('/dashboard/photos/upload', [PhotoController::class, 'upload'])->name('photos.upload');
+        Route::post('/dashboard/photos/search', [PhotoController::class, 'search'])->name('photos.search');
 
     //Sales
     Route::get('/dashboard/sales', [SaleController::class, 'index'])->name('sales.index');
@@ -66,4 +70,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::put('/dashboard/sales/change-password/{id}', [SaleController::class, 'changePassword'])->name('albums.changePassword');
         Route::post('/dashboard/sales/upload/{id}', [SaleController::class, 'upload'])->name('sales.upload');
         Route::post('/dashboard/sales/select-photos', [SaleController::class, 'selectPhotos'])->name('sales.selectPhotos');
+
+    Route::get('/dashboard/suscription', [SuscriptionController::class, 'index'])->name('suscription.index');
+    Route::post('/dashboard/user/subscribe', [SuscriptionController::class, 'subscribe'])->name('suscription.subscribe');
 });
+
+Route::get('/', [IndexController::class, 'index'])->name('web.index');

@@ -176,10 +176,19 @@
                 </div>
             </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
+                <div class="col-12 md:col-4">
+                    <div class="p-inputgroup">
+                        <InputText @keypress.enter="searchImages" v-model="search" placeholder="Busqueda..."/>
+                        <Button @click="searchImages" icon="pi pi-search" class="p-button-info"/>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg pb-4">
                     <section ref="gallery" class="grid-container" :key="index">
 
-                        <Galleria :value="photos" v-model:activeIndex="activeIndex" thumbnailsPosition="left" :responsiveOptions="responsiveOptions" :numVisible="7" containerStyle="max-width: 850px"
+                        <Galleria :value="filter_photos" v-model:activeIndex="activeIndex" thumbnailsPosition="left" :responsiveOptions="responsiveOptions" :numVisible="7" containerStyle="max-width: 850px"
                             :circular="true" :fullScreen="true" :showItemNavigators="true" :showThumbnails="false" v-model:visible="displayCustom">
                             <template #item="slotProps">
                                 <img :src="slotProps.item.url_photo" :alt="slotProps.item.description" style="width: 100%; display: block;" />
@@ -194,7 +203,7 @@
                         </Galleria>
 
                         <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
-                            <div class="image-container item" v-for="(image, index) in photos" :key="image.url_preview">
+                            <div class="image-container item" v-for="(image, index) in filter_photos" :key="image.url_preview">
                                 <div class="image-container-info-img" @click="imageClick(index)">
                                     <img v-masonry-tile class="img-tile shadow-md rounded-md" :src="image.url_preview" srcset="" :alt="image.description" />
                                 </div>
@@ -275,11 +284,36 @@ export default defineComponent({
             items: [
                 'photos.show',
                 'photos.edit',
-            ]
+            ],
+
+            search: '',
+            filter_photos: [],
         }
     },
 
+    mounted() {
+        this.filter_photos = this.photos
+    },
+
     methods: {
+        searchImages(){
+            try {
+                let URL = '/dashboard/photos/search'
+
+                let data = new FormData()
+                data.append('search', this.search)
+
+                axios.post(URL, data).then(response => {
+                    console.log(response.data);
+                    this.filter_photos = response.data
+                }).catch(e => {
+                    console.log(e);
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
         imageClick(index) {
             this.activeIndex = index;
             this.displayCustom = true;

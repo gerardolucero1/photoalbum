@@ -20,7 +20,7 @@ class PhotoController extends Controller
      */
     public function index()
     {
-        $photos = Photo::where('album_id', null)->doesntHave('sales')->get();
+        $photos = Photo::where('user_id', Auth::user()->id)->where('album_id', null)->doesntHave('sales')->get();
         return Inertia::render('System/Photos/Index', compact('photos'));
     }
 
@@ -205,5 +205,18 @@ class PhotoController extends Controller
         }
 
         return $array_images;
+    }
+
+    public function search(Request $request)
+    {
+        $photos = Photo::search($request->search)->where('user_id', Auth::user()->id)->get();
+
+        // $filtered = $photos->filter(function($q, $key)  {
+        //     return $q->album_id == 1;
+        // });
+
+        // dd($filtered->all());
+
+        return $photos;
     }
 }

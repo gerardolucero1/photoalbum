@@ -21,8 +21,8 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        $albums = Album::withCount('photos')->get();
-        $sales = Sale::where('active', 1)->withCount('photos')->get();
+        $albums = Album::where('user_id', Auth::user()->id)->withCount('photos')->get();
+        $sales = Sale::where('user_id', Auth::user()->id)->where('active', 1)->withCount('photos')->get();
 
         return Inertia::render('System/Albums/Index', compact('albums', 'sales'));
     }
