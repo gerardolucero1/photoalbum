@@ -27,12 +27,11 @@ class CreateCustomerStripe
      */
     public function handle(Registered $event)
     {
-        $event->user->createOrGetStripeCustomer();
+        $event->user->createAsStripeCustomer();
 
         Profile::create([
             'user_id' => $event->user->id,
-            'account_type' => 'free',
-            'disk_space' => '1000',
+            'plan_id' => 1,
         ]);
     }
 }

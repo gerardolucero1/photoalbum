@@ -8,7 +8,7 @@
 
         <div>
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-                <account-type class="mb-10" :profile="profile" />
+                <account-type class="mb-10" :profile="profile" :plan="$page.props.plan" />
 
                 <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                     <update-profile-information-form :user="$page.props.user" />

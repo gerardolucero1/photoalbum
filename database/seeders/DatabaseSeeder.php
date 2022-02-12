@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Database\Seeder;
@@ -26,6 +27,36 @@ class DatabaseSeeder extends Seeder
 
         $user = Profile::create([
             'user_id' => $user->id,
+        ]);
+
+        $plan = Plan::create([
+            'name' => 'Free',
+            'slug' => 'free',
+            'stripe_name' => 'free',
+            'stripe_id' => 'price_1KRhRiLwFtk4DPRSQitY5ovq',
+            'price' => 0,
+            'abbreviation' => '/free',
+            'disk_space' => 10000,
+        ]);
+
+        $plan = Plan::create([
+            'name' => 'Basic',
+            'slug' => 'basic',
+            'stripe_name' => 'basic',
+            'stripe_id' => 'price_1KRhSILwFtk4DPRSZhGeFZLN',
+            'price' => 2,
+            'abbreviation' => '/basic',
+            'disk_space' => 100000,
+        ]);
+
+        $plan = Plan::create([
+            'name' => 'Premium',
+            'slug' => 'premium',
+            'stripe_name' => 'premium',
+            'stripe_id' => 'price_1KRhStLwFtk4DPRSHjtU6ZCR',
+            'price' => 5,
+            'abbreviation' => '/premium',
+            'disk_space' => 1000000,
         ]);
     }
 }

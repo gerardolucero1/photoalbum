@@ -16,6 +16,7 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('plan_id')->nullable();
             $table->string('name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('country')->nullable();
@@ -23,9 +24,15 @@ class CreateProfilesTable extends Migration
             $table->string('city')->nullable();
             $table->string('direction')->nullable();
             $table->string('cp')->nullable();
-            $table->string('account_type')->default('free');
-            $table->string('disk_space')->default(10000);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+
+            $table->foreign('plan_id')->references('id')->on('plans')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
         });
     }
 

@@ -44,6 +44,13 @@ class HandleInertiaRequests extends Middleware
                 
                 return $request->user()->profile;
             },
+            'plan' => function () use ($request) {
+                if (!$request->user()) {
+                    return;
+                }
+                
+                return $request->user()->profile->plan;
+            },
         ]);
     }
 }
