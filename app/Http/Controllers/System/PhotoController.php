@@ -89,7 +89,7 @@ class PhotoController extends Controller
         $photo->private = $data->private;
         
         if ($archivo = $request->file('file')) {
-            $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+            $free_disk = Auth::user()->profile->plan->disk_space - (Auth::user()->photos->sum('size') / 1000000);
         
             if ($request->size / 1000000 > $free_disk) {
                 return response([
@@ -157,7 +157,7 @@ class PhotoController extends Controller
 
     public function upload(Request $request)
     {
-        $free_disk = Auth::user()->profile->disk_space - (Auth::user()->photos->sum('size') / 1000000);
+        $free_disk = Auth::user()->profile->plan->disk_space - (Auth::user()->photos->sum('size') / 1000000);
         
         if ($request->size / 1000000 > $free_disk) {
             return response([
