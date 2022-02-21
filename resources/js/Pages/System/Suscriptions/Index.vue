@@ -27,8 +27,21 @@
 
                                     <h4 class="text-2xl mt-5">${{ plan.price }}</h4>
                                 </div>
-                                <div class="flex justify-end mt-4">
-                                    <button @click="makeVisibleCard(plan)" class="text-xl font-medium text-indigo-500">Comprar</button>
+                                <div v-if="plan.name == 'Free'">
+                                    <div class="flex justify-end mt-4" v-if="$page.props.plan.id != plan.id">
+                                        <button class="text-xl font-medium text-indigo-500">Gratuito</button>
+                                    </div>
+                                    <div v-else class="flex justify-end mt-4">
+                                        <p class="text-xl font-medium text-indigo-500">Plan actual</p>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="flex justify-end mt-4" v-if="$page.props.plan.id != plan.id">
+                                        <button @click="makeVisibleCard(plan)" class="text-xl font-medium text-indigo-500">Comprar</button>
+                                    </div>
+                                    <div v-else class="flex justify-end mt-4">
+                                        <p class="text-xl font-medium text-indigo-500">Plan actual</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -42,10 +55,11 @@
         <Sidebar v-model:visible="isVisible" position="right" class="p-sidebar-md">
             <div>
                 <div class="px-4 py-5 bg-white sm:p-6">
-                    <h2 class="text-2xl">{{ plan_selected.name }}</h2>
+                    <h2 class="text-2xl font-bold">{{ plan_selected.name }}</h2>
                 </div>
                 <div class="px-4 py-5 bg-white sm:p-6">
-                    <div class="grid grid-cols-6 gap-6">
+                    <h3 class="text-xl font-bold">Costumer Information</h3>
+                    <div class="grid grid-cols-6 gap-6 mt-2">
                         <div class="col-span-6 sm:col-span-3">
                             <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
                             <input type="text" v-model="profile.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -76,8 +90,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="px-4 py-5 bg-white sm:p-6">
-                    <div class="grid grid-cols-6 gap-6">
+                
+                <div class="px-4 py-5 bg-white sm:p-6 mt-2">
+                    <h3 class="text-xl font-bold">Payment Information</h3>
+                    <div class="grid grid-cols-6 gap-6 mt-3">
+                        <div class="col-span-6 sm:col-span-6">
+                            <label for="card-name" class="block text-sm font-medium text-gray-700">Nombre de la tarjeta</label>
+                            <input type="text" v-model="card_name" name="card-name" id="card-name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
                         <div class="col-span-6 sm:col-span-6">
                            <!-- Stripe Elements Placeholder -->
                             <div id="card-element"></div>
@@ -103,7 +123,7 @@ export default defineComponent({
     props: [
         'intent',
         'profile',
-        'plans'
+        'plans',
     ],
 
     components: {
@@ -117,6 +137,8 @@ export default defineComponent({
             isVisible: false,
             stripe: null,
             cardElement: null,
+
+            card_name: '',
 
             plan_selected: null,
         }
@@ -169,7 +191,7 @@ export default defineComponent({
                     clientSecret, {
                         payment_method: {
                             card: this.cardElement,
-                            billing_details: { name: this.profile.name + ' ' + this.profile.last_name }
+                            billing_details: { name: this.card_name }
                         }
                     }
                 ).then(response => {

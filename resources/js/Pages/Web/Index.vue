@@ -1,15 +1,33 @@
+<style scoped lang="scss">
+    
+</style>
+
 <template>
-    <div>
-        <h1>Home</h1>
-    </div>
+    <main-layout title="Inicio">
+        <p>Ola</p>
+    </main-layout>
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue'
+import MainLayout from '@/Layouts/MainLayout.vue'
+import { Link } from '@inertiajs/inertia-vue3';
 
-}
+export default defineComponent({
+    components: {
+        MainLayout,
+        Link,
+    },
+
+    data(){
+        return{
+            
+        }
+    },
+
+    methods: {
+
+    }
+
+})
 </script>
-
-<style>
-
-</style>

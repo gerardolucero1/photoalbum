@@ -23,7 +23,7 @@ class SuscriptionController extends Controller
         $data = json_decode($request->props);
         // auth()->user()->addPaymentMethod($data->card->payment_method);
 
-        auth()->user()->newSubscription($data->plan->stripe_name, $data->plan->stripe_id)->create($data->card->payment_method);
+        auth()->user()->newSubscription($data->plan->stripe_name, $data->plan->stripe_price_id)->create($data->card->payment_method);
         
         Auth::user()->profile()->update([
             'plan_id' => $data->plan->id,

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Cashier\Billable;
+use function Illuminate\Events\queueable;
 
 class User extends Authenticatable
 {
@@ -63,6 +64,31 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    public function lineOne(): ?string
+    {
+        return $this->profile->direction;
+    }
+
+    public function state(): ?string
+    {
+        return $this->profile->state;
+    }
+
+    public function postalCode(): ?string
+    {
+        return $this->profile->cp;
+    }
+
+    public function country(): ?string
+    {
+        return $this->profile->country;
+    }
+
+    public function city(): ?string
+    {
+        return $this->profile->city;
+    }
+
     /**
      * Get all of the photos for the User
      *
@@ -91,5 +117,36 @@ class User extends Authenticatable
     public function profile(): HasOne
     {
         return $this->hasOne(Profile::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::updated(queueable(function ($customer) {
+            if ($customer->hasStripeId()) {
+                $customer->syncStripeCustomerDetails();
+            }
+        }));
+    }
+
+    /**
+     * Get the address that should be synced to Stripe.
+     *
+     * @return array|null
+     */
+    public function stripeAddress()
+    {
+        return [
+            'city'          => $this->city(),
+            'country'       => $this->country(),
+            'line1'         => $this->lineOne(),
+            'line2'         => '',
+            'postal_code'   => $this->postalCode(),
+            'state'         => $this->state(),
+        ];
     }
 }
