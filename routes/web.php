@@ -5,11 +5,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\Web\IndexController;
+use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
-use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\SuscriptionController;
+use App\Http\Controllers\Web\PhotoController as WebPhotoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,15 +22,6 @@ use App\Http\Controllers\System\SuscriptionController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard', function () {
@@ -73,6 +65,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
     Route::get('/dashboard/suscription', [SuscriptionController::class, 'index'])->name('suscription.index');
     Route::post('/dashboard/user/subscribe', [SuscriptionController::class, 'subscribe'])->name('suscription.subscribe');
+    Route::get('/dashboard/suscription/cancel/{suscription}', [SuscriptionController::class, 'destroy'])->name('suscription.destroy');
 });
 
 Route::get('/', [IndexController::class, 'index'])->name('web.index');
+Route::get('/photos/{slug}', [WebPhotoController::class, 'photo'])->name('web.photos.show');
+    //Fedd
+    Route::get('/feed/publications', [WebPhotoController::class, 'photos']);

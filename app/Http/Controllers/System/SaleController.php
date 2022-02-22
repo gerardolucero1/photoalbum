@@ -7,6 +7,7 @@ use App\Models\Sale;
 use Inertia\Inertia;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -169,6 +170,7 @@ class SaleController extends Controller
                 );
 
                 $image->name = $file->getClientOriginalName();
+                $image->slug = Str::of($image->name)->slug('-');
 
                 $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
                 $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);

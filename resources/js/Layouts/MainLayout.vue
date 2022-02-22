@@ -4,11 +4,13 @@
 
         <jet-banner />
 
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-white">
             <header class="grid grid-cols-12 gap-4 bg-white shadow-md">
-                <div class="logo col-span-1 p-1 flex justify-center items-center">
-                    <i class="fas fa-camera-retro"></i>
-                    <p class="ml-1 font-bold">Photoalbum</p>
+                <div class="logo col-span-1 p-1">
+                    <Link :href="route('web.index')" class="mt-2 flex justify-center items-center">
+                        <i class="fas fa-camera-retro"></i>
+                        <p class="ml-1 font-bold">Photoalbum</p>
+                    </Link>
                 </div>
                 <div class="logo col-span-6 p-1 flex justify-center items-center">
                     <input type="search" class="w-full rounded-full border-0 bg-slate-200 focus:border-0">

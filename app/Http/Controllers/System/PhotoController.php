@@ -6,6 +6,7 @@ use Image;
 use App\Models\Sale;
 use Inertia\Inertia;
 use App\Models\Photo;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +83,7 @@ class PhotoController extends Controller
 
         $photo = Photo::find($id);
         $photo->name = $data->name;
+        $photo->slug = Str::of($data->name)->slug('-');
         $photo->description = $data->description;
         $photo->single_sale = $data->single_sale;
         $photo->price = $data->price;
@@ -194,6 +196,7 @@ class PhotoController extends Controller
                 );
 
                 $image->name = $file->getClientOriginalName();
+                $image->slug = Str::of($image->name)->slug('-');
 
                 $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
                 $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);

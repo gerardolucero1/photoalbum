@@ -11,7 +11,6 @@ class IndexController extends Controller
 {
     public function index()
     {
-        // $stripeCustomer = Auth::user()->createAsStripeCustomer();
         return Inertia::render('Web/Index');
     }
 }

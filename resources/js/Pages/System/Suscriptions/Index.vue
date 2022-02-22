@@ -39,8 +39,9 @@
                                     <div class="flex justify-end mt-4" v-if="$page.props.plan.id != plan.id">
                                         <button @click="makeVisibleCard(plan)" class="text-xl font-medium text-indigo-500">Comprar</button>
                                     </div>
-                                    <div v-else class="flex justify-end mt-4">
-                                        <p class="text-xl font-medium text-indigo-500">Plan actual</p>
+                                    <div v-else class="flex justify-end mt-4 flex flex-col">
+                                        <button class="text-sm py-1 font-medium text-white w-full bg-blue-500 rounded-sm">Plan actual</button>
+                                        <button @click="cancelSuscription(plan.stripe_name)" class="text-sm py-1 font-medium text-white w-full bg-red-600 rounded-sm mt-2">Cancelar suscripcion</button>
                                     </div>
                                 </div>
                             </div>
@@ -164,6 +165,7 @@ export default defineComponent({
                 
                 axios.post(URL, data).then(response => {
                     console.log(response);
+                    this.$toast.add({severity:'success', summary: 'Suscripcion', detail:'Te has suscrito al plan ' + this.plan_selected.name, life: 3000});
                 })
             } catch (error) {
                 console.log(error);
@@ -199,6 +201,19 @@ export default defineComponent({
                     this.subscribe(response)
                 }).catch(error => {
                     console.log(error);
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        cancelSuscription(plan){
+            try {
+                let URL = `/dashboard/suscription/cancel/${plan}`
+
+                axios.get(URL).then(response => {
+                    console.log('cancelado');
+                    this.$toast.add({severity:'success', summary: 'Suscripcion', detail:'Has cancelado tu suscripcion actual, pasaras al plan gratuito.', life: 3000});
                 })
             } catch (error) {
                 console.log(error);
