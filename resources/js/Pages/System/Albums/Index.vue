@@ -87,7 +87,7 @@
                         <Column field="price" header="Precio" sortable style="min-width: 11rem">
                             <template #body="{data}">
                                 <div class="text-sm text-gray-900">
-                                    {{ data.price }}
+                                    {{ toCurrency(Number(data.price)) }}
                                 </div>
                             </template>
                         </Column>
@@ -123,8 +123,8 @@
                                 <Link v-tooltip.top="'Agregar fotos'" :href="route('albums.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
                                     <i class="far fa-images"></i>
                                 </Link>
-                                <button @click="putSale(data)" v-tooltip.top="'Agregar a paquete'" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
-                                    <i class="fas fa-boxes"></i>
+                                <button @click="putSale(data)" v-tooltip.top="'Precio individual'" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                    <i class="fas fa-money-bill"></i>
                                 </button>
                             </template>
                         </Column>
@@ -134,9 +134,22 @@
         </div>
 
         <Sidebar v-model:visible="sidebar" :baseZIndex="1000" position="right">
-            <h3 class="text-2xl font-bold">Paquetes activos</h3>
+            <h3 class="text-xl font-bold">Ajusta el precio de todas las fotos pertenecientes a este album</h3>
+            <h5 class="text-sm mt-2">Precio sugerido: <span class="font-bold">{{ toCurrency(Number(album_selected.price / album_selected.photos_count)) }}</span></h5>
+            <div class="mt-5">
+                <input type="number" min="0" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" v-model="single_price">
+                <div v-if="v$.single_price.$error">
+                    <span class="text-red-500 text-xs" v-for="error in v$.single_price.$silentErrors" :key="error">{{ error.$message }}</span>
+                </div>
+                <div class="mt-2 flex justify-end items-center">
+                    <button @click="updatePrice" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Actualizar precio
+                    </button>
+                </div>
+            </div>
 
-            <ul class="mt-4">
+            <p class="mt-2 text-xs">*Todas las fotos de este album se marcaran como venta individual al precio seleccionado*</p>
+            <!-- <ul class="mt-4">
                 <li v-for="(sale, index) in sales" :key="index" class="mb-2" @click="selectSale(sale)">
                     <div class="flex items-center hover:bg-gray-50 p-2 hover:cursor-pointer">
                         <i class="fas fa-box text-2xl"></i>
@@ -150,7 +163,7 @@
                         </div>
                     </div>
                 </li>
-            </ul>
+            </ul> -->
         <Toast></Toast>
         </Sidebar>
         <ConfirmDialog></ConfirmDialog>
@@ -162,6 +175,8 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import {FilterMatchMode} from 'primevue/api';
+import useVuelidate from '@vuelidate/core'
+import { between, required } from '@vuelidate/validators'
 
 export default defineComponent({
     props: [
@@ -174,6 +189,10 @@ export default defineComponent({
         Link,
     },
 
+    setup () {
+        return { v$: useVuelidate() }
+    },
+
     data(){
         return{
             filters: {
@@ -182,6 +201,16 @@ export default defineComponent({
 
             sidebar: false,
             album_selected: null,
+            single_price: 0,
+        }
+    },
+
+    validations () {
+        return {
+            single_price: {
+                required,
+                between: between(10, 10000)
+            }
         }
     },
 
@@ -191,24 +220,28 @@ export default defineComponent({
             this.sidebar = true
         },
 
-        selectSale(sale){
+        updatePrice(sale){
+            if (this.v$.single_price.$invalid) {
+                this.$toast.add({severity:'error', summary: 'Error', detail:'Checa tus datos.', life: 3000});
+                this.v$.$touch()
+                return
+            }
             this.$confirm.require({
-                message: `¿Quieres agregar el contenido de este album a ${sale.name}?`,
-                header: 'Seleccionar paquete',
+                message: `¿Ajustar precio del contenido de este album?`,
+                header: 'Ajuste de precio',
                 icon: 'pi pi-info-circle',
                 acceptClass: 'p-button-info',
                 accept: () => {
                     try {
-                        let URL = `/dashboard/sales/select-photos`
+                        let URL = `/dashboard/albums/update-price-photos`
 
                         let data = new FormData()
-                        data.append('sale_id', sale.id)
+                        data.append('price', this.single_price)
                         data.append('album_id', this.album_selected.id)
 
                         axios.post(URL, data).then(response =>  {
-                            this.$toast.add({severity:'info', summary:'Venta actualizada', detail:`Se ha agregado el contenido a ${sale.name}`, life: 3000});
-                            let foundIndex = this.sales.findIndex(doc => doc.id == sale.id)
-                            this.sales.splice(foundIndex, 1, response.data)
+                            this.$toast.add({severity:'info', summary:'Precio actualizado', detail:`Se ha actualizado el precio del contenido`, life: 3000});
+                            
                         })
                     } catch (error) {
                         console.log(error);

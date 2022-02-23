@@ -124,12 +124,12 @@ class AlbumController extends Controller
         $album->price = $data->price;
         
         if ($archivo = $request->file('file')) {
-            // Guardar imagen original
+            
             $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
             $thumbName = md5($archivo->getRealPath() . time());
             $guessExtension = $archivo->guessExtension();
 
-            //Guardar thumb
+            
             $img = Image::make($archivo);
             $img->resize(500, null, function ($constraint) {
                 $constraint->aspectRatio();
@@ -143,9 +143,9 @@ class AlbumController extends Controller
             $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
         }
         $album->photos()->update([ 'private' => $data->private ]);
-        foreach ($album->photos as $photo) {
-            $photo->syncTags($data->tags);
-        }
+        // foreach ($album->photos as $photo) {
+        //     $photo->syncTags($data->tags);
+        // }
         $album->save();
 
         return $album;
@@ -214,5 +214,13 @@ class AlbumController extends Controller
         }
 
         return $array_images;
+    }
+
+    public function updatePricePhotos(Request $request)
+    {
+        $album = Album::find($request->album_id);
+        $album->photos()->update([ 'single_sale' => 1, 'price' => $request->price ]);
+
+        return;
     }
 }

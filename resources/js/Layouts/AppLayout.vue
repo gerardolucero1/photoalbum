@@ -12,8 +12,9 @@
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('dashboard')">
-                                    <jet-application-mark class="block h-9 w-auto" />
+                                <Link :href="route('web.index')" class="mt-0 flex justify-center items-center">
+                                    <i class="fas fa-camera-retro"></i>
+                                    <p class="ml-1 font-bold">Photoalbum</p>
                                 </Link>
                             </div>
 
@@ -25,9 +26,9 @@
                                 <jet-nav-link :href="route('albums.index')" :active="route().current('albums.index')">
                                     Albums
                                 </jet-nav-link>
-                                <jet-nav-link :href="route('sales.index')" :active="route().current('sales.index')">
+                                <!-- <jet-nav-link :href="route('sales.index')" :active="route().current('sales.index')">
                                     Paquetes
-                                </jet-nav-link>
+                                </jet-nav-link> -->
                                 <jet-nav-link :href="route('photos.index')" :active="route().current('photos.index')">
                                     Fotografias
                                 </jet-nav-link>
@@ -133,7 +134,7 @@
                                         <!-- Authentication -->
                                         <form @submit.prevent="logout">
                                             <jet-dropdown-link as="button">
-                                                Log Out
+                                                Salir
                                             </jet-dropdown-link>
                                         </form>
                                     </template>

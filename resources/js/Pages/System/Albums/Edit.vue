@@ -35,7 +35,7 @@
 </style>
 
 <template>
-    <app-layout title="Dashboard">
+    <app-layout title="Editar album">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Editar el album {{ album.name }}
@@ -76,6 +76,9 @@
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
                                                 <input type="text" v-model="album.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                                <div v-if="v$.album.name.$error">
+                                                    <span class="text-red-500 text-xs" v-for="error in v$.album.name.$silentErrors" :key="error">{{ error.$message }}</span>
+                                                </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="description" class="block text-sm font-medium text-gray-700">Descripcion</label>
@@ -83,6 +86,10 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="active" class="block text-sm font-medium text-gray-700">Poner en venta</label>
+                                                <InputSwitch id="active" v-model="album.show_price" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6" v-if="album.show_price">
                                                 <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
                                                 <input type="number" v-model="album.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                             </div>
@@ -95,11 +102,11 @@
                                                 <InputSwitch id="private" v-model="album.private" />
 
                                                 <div class="mt-2">
-                                                    <p v-if="album.private" class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
-                                                    <p v-else class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
+                                                    <p v-if="album.private" class="text-sm text-gray-500">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
+                                                    <p v-else class="text-sm text-gray-500">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
                                                 </div>
                                             </div>
-                                            <div class="col-span-6 sm:col-span-6">
+                                            <!-- <div class="col-span-6 sm:col-span-6">
                                                 <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
                                                 <vue-tags-input
                                                     class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -107,9 +114,10 @@
                                                     :tags="tags"
                                                     @tags-changed="newTags => tags = newTags"
                                                     />
-                                            </div>
+                                            </div> -->
                                             <div class="col-span-6 sm:col-span-6">
-                                                <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
+                                                <label for="private" class="block text-sm font-medium text-gray-700">Elige una imagen para tu album</label>
+                                                <FileUpload class="mt-1" ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
                                                     <template #empty>
                                                         <p>Drag and drop files to here to upload.</p>
                                                     </template>
@@ -152,11 +160,17 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import VueTagsInput from '@sipec/vue3-tags-input';
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
 
 export default defineComponent({
     props: [
         'album'
     ],
+
+    setup () {
+        return { v$: useVuelidate() }
+    },
 
     components: {
         AppLayout,
@@ -167,6 +181,7 @@ export default defineComponent({
     created(){
         this.album.private == 1 ? this.album.private = true :  this.album.private = false
         this.album.active == 1 ? this.album.active = true :  this.album.active = false
+        this.album.price != null ? this.album.show_price = true :  this.album.show_price = false
     },
 
     data(){
@@ -174,6 +189,16 @@ export default defineComponent({
             uploading: false,
             tag: '',
             tags: [],
+        }
+    },
+
+    validations () {
+        return {
+            album: {
+                name: {
+                    required
+                },
+            }
         }
     },
 
@@ -188,13 +213,20 @@ export default defineComponent({
         },
 
         sendForm($event){
+            if (this.v$.album.$invalid) {
+                this.$toast.add({severity:'error', summary: 'Error', detail:'Checa tus datos.', life: 3000});
+                this.v$.$touch()
+                return
+            }
             this.uploading = true
-            this.album.tags = this.tags.map(doc => doc.text);
-            
             try {
                 let URL = `/dashboard/albums/edit/${this.album.id}`
 
                 let data = new FormData()
+
+                if (!this.album.show_price) {
+                    this.album.price = null
+                }
                 
                 data.append('props', JSON.stringify(this.album))
                 data.append("file", $event.files[0]);

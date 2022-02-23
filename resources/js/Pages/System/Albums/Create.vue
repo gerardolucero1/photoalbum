@@ -27,7 +27,7 @@
 </style>
 
 <template>
-    <app-layout title="Dashboard">
+    <app-layout title="Crear Album">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Crear nuevo album
@@ -68,6 +68,9 @@
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
                                                 <input type="text" v-model="new_album.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                                <div v-if="v$.new_album.name.$error">
+                                                    <span class="text-red-500 text-xs" v-for="error in v$.new_album.name.$silentErrors" :key="error">{{ error.$message }}</span>
+                                                </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="description" class="block text-sm font-medium text-gray-700">Descripcion</label>
@@ -75,6 +78,10 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="active" class="block text-sm font-medium text-gray-700">Poner en venta</label>
+                                                <InputSwitch id="active" v-model="new_album.show_price" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6" v-if="new_album.show_price">
                                                 <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
                                                 <input type="number" v-model="new_album.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                                             </div>
@@ -87,12 +94,13 @@
                                                 <InputSwitch id="private" v-model="new_album.private" />
 
                                                 <div class="mt-2">
-                                                    <p v-if="new_album.private" class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
-                                                    <p v-else class="text-sm text-gray-600">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
+                                                    <p v-if="new_album.private" class="text-sm text-gray-500">Este album incluido todo su contenido se pondra en estatus "privado" y no se indexara dentro de la plataforma.</p>
+                                                    <p v-else class="text-sm text-gray-500">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
                                                 </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
-                                                <FileUpload ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
+                                                <label for="private" class="block text-sm font-medium text-gray-700">Elige una imagen para tu album</label>
+                                                <FileUpload class="mt-1" ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
                                                     <template #empty>
                                                         <p>Drag and drop files to here to upload.</p>
                                                     </template>
@@ -128,11 +136,17 @@
 import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
 
 export default defineComponent({
     props: [
         'albums'
     ],
+
+    setup () {
+        return { v$: useVuelidate() }
+    },
 
     components: {
         AppLayout,
@@ -143,10 +157,23 @@ export default defineComponent({
         return{
             new_album: {
                 name: '',
+                description: '',
                 private: false,
+                price: null,
+                active: false,
             },
 
             uploading: false,
+        }
+    },
+
+    validations () {
+        return {
+            new_album: {
+                name: {
+                    required
+                },
+            }
         }
     },
 
@@ -161,12 +188,20 @@ export default defineComponent({
         },
 
         sendForm($event){
+            if (this.v$.new_album.$invalid) {
+                this.$toast.add({severity:'error', summary: 'Error', detail:'Checa tus datos.', life: 3000});
+                this.v$.$touch()
+                return
+            }
             this.uploading = true
-            console.log($event);
             try {
                 let URL = '/dashboard/albums'
 
                 let data = new FormData()
+
+                if (!this.new_album.show_price) {
+                    this.new_album.price = null
+                }
                 
                 data.append('props', JSON.stringify(this.new_album))
                 data.append("file", $event.files[0]);
@@ -176,6 +211,16 @@ export default defineComponent({
                     console.log(response);
                     this.$toast.add({severity:'success', summary: 'Album creado', detail:'Se ha creado un nuevo album', life: 3000});
                     this.uploading = false
+
+                    this.new_album = {
+                        name: '',
+                        description: '',
+                        private: false,
+                        price: null,
+                        active: false,
+                    }
+
+                    this.$refs.uploader.clear()
                 }).catch(error => {
                     console.log(error);
                     this.$toast.add({severity:'error', summary: 'Error', detail:'Ha ocurrido un error', life: 3000});

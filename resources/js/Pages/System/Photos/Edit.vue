@@ -32,10 +32,15 @@
             stroke: #ffa700;
         }
     }
+
+    .ti-input{
+        border-color: rgb(209, 213, 219) !important;
+        border-radius: 0.375rem !important;   
+    }
 </style>
 
 <template>
-    <app-layout title="Dashboard">
+    <app-layout :title="photo.name">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Editar la fotografia {{ photo.name }}
@@ -79,6 +84,9 @@
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="name" class="block text-sm font-medium text-gray-700">Nombre</label>
                                                 <input type="text" v-model="photo.name" name="name" id="name" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                                                <div v-if="v$.photo.name.$error">
+                                                    <span class="text-red-500 text-xs" v-for="error in v$.photo.name.$silentErrors" :key="error">{{ error.$message }}</span>
+                                                </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="description" class="block text-sm font-medium text-gray-700">Descripcion</label>
@@ -93,6 +101,44 @@
                                                 <label for="single_sale" class="block text-sm font-medium text-gray-700">Venta individual</label>
                                                 <InputSwitch id="single_sale" v-model="photo.single_sale" />
                                             </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="single_sale" class="block text-sm font-medium text-gray-700">Album</label>
+                                                <Dropdown class="w-full" v-model="album_selected" :options="albums" optionLabel="name" :filter="true" placeholder="Selecciona un album" :showClear="true">
+                                                    <template #value="slotProps">
+                                                        <div class="country-item country-item-value" v-if="slotProps.value">
+                                                            <div class="flex items-center">
+                                                                <div class="flex-shrink-0 h-6 w-6">
+                                                                    <img class="h-6 w-6 rounded-full object-cover object-center" :src="slotProps.value.photo_url" alt="" />
+                                                                </div>
+                                                                <div class="ml-4">
+                                                                    <div class="text-sm font-medium text-gray-900">
+                                                                        {{ slotProps.value.name }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <span v-else>
+                                                            {{slotProps.placeholder}}
+                                                        </span>
+                                                    </template>
+                                                    <template #option="slotProps">
+                                                        <div class="country-item">
+                                                            <div class="flex items-center">
+                                                                <div class="flex-shrink-0 h-6 w-6">
+                                                                    <img class="h-6 w-6 rounded-full object-cover object-center" :src="slotProps.option.photo_url" alt="" />
+                                                                </div>
+                                                                <div class="ml-4">
+                                                                    <div class="text-sm font-medium text-gray-900">
+                                                                        {{ slotProps.option.name }}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </Dropdown>
+                                            </div>
+
                                             <div v-if="photo.single_sale" class="col-span-6 sm:col-span-6">
                                                 <label for="price" class="block text-sm font-medium text-gray-700">Precio</label>
                                                 <input type="number" v-model="photo.price" name="price" id="price" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
@@ -100,7 +146,7 @@
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
                                                 <vue-tags-input
-                                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    class="mt-1 w-full"
                                                     v-model="tag"
                                                     :tags="tags"
                                                     @tags-changed="newTags => tags = newTags"
@@ -151,11 +197,18 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import VueTagsInput from '@sipec/vue3-tags-input';
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
 
 export default defineComponent({
     props: [
-        'photo'
+        'photo',
+        'albums',
     ],
+
+    setup () {
+        return { v$: useVuelidate() }
+    },
 
     components: {
         AppLayout,
@@ -163,9 +216,20 @@ export default defineComponent({
         VueTagsInput
     },
 
+    validations () {
+        return {
+            photo: {
+                name: {
+                    required
+                },
+            }
+        }
+    },
+
     created(){
         this.photo.private == 1 ? this.photo.private = true :  this.photo.private = false
         this.photo.single_sale == 1 ? this.photo.single_sale = true :  this.photo.single_sale = false
+        this.album_selected = this.albums.find(doc => doc.id == this.photo.album_id)
 
         this.tags = this.photo.tags.map(doc => {
             let tag = {
@@ -180,6 +244,7 @@ export default defineComponent({
             uploading: false,
             tag: '',
             tags: [],
+            album_selected: null,
         }
     },
 
@@ -194,8 +259,17 @@ export default defineComponent({
         },
 
         sendForm($event){
+            if (this.v$.photo.$invalid) {
+                this.$toast.add({severity:'error', summary: 'Error', detail:'Checa tus datos.', life: 3000});
+                this.v$.$touch()
+                return
+            }
+
             this.uploading = true
             this.photo.tags = this.tags.map(doc => doc.text);
+            if (this.album_selected != null) {
+                this.photo.album_id = this.album_selected.id
+            }
 
             this.photo.single_sale == false ? this.photo.price = null : this.photo.price = this.photo.price
 

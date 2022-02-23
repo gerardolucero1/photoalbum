@@ -26,7 +26,7 @@ import Badge from 'primevue/badge';
 import Sidebar from 'primevue/sidebar';
 import ContextMenu from 'primevue/contextmenu';
 import ProgressBar from 'primevue/progressbar';
-
+import Dropdown from 'primevue/dropdown';
 
 import { VueMasonryPlugin } from "vue-masonry/src/masonry.plugin";
 
@@ -40,12 +40,26 @@ createInertiaApp({
             .use(plugin)
             .use(VueMasonryPlugin)
             .use(ConfirmationService)
-            .mixin({ methods: { route } })
-            .mixin({ methods: {
-                prevLink(){
-                    window.history.back();
+            .mixin({ 
+                methods: { 
+                    route,
+
+                    prevLink(){
+                        window.history.back();
+                    },
+
+                    toCurrency(value){
+                        if (typeof value !== "number") {
+                            return value;
+                        }
+                        var formatter = new Intl.NumberFormat('es-MX', {
+                            style: 'currency',
+                            currency: 'MXN'
+                        });
+                        return formatter.format(value);
+                    }
                 }
-            } })
+            })
             .use(PrimeVue)
             .use(ToastService)
             .directive('tooltip', Tooltip)
@@ -66,6 +80,7 @@ createInertiaApp({
             .component('Sidebar', Sidebar)
             .component('ContextMenu', ContextMenu)
             .component('ProgressBar', ProgressBar)
+            .component('Dropdown', Dropdown)
             .mount(el);
     },
 });

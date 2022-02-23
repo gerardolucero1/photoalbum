@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard/albums/edit/{id}', [AlbumController::class, 'edit'])->name('albums.edit');
     Route::put('/dashboard/albums/edit/{id}', [AlbumController::class, 'update'])->name('albums.update');
         Route::post('/dashboard/albums/upload/{id}', [AlbumController::class, 'upload'])->name('albums.upload');
+        Route::post('/dashboard/albums/update-price-photos', [AlbumController::class, 'updatePricePhotos'])->name('albums.updatePricePhotos');
 
     //Photos
     Route::get('/dashboard/photos', [PhotoController::class, 'index'])->name('photos.index');

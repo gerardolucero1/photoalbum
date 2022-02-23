@@ -5,6 +5,7 @@ namespace App\Http\Controllers\System;
 use Image;
 use App\Models\Sale;
 use Inertia\Inertia;
+use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -67,7 +68,8 @@ class PhotoController extends Controller
     public function edit($id)
     {
         $photo = Photo::with('album')->with('tags')->find($id);
-        return Inertia::render('System/Photos/Edit', compact('photo'));
+        $albums = Album::all();
+        return Inertia::render('System/Photos/Edit', compact('photo', 'albums'));
     }
 
     /**
@@ -85,6 +87,7 @@ class PhotoController extends Controller
         $photo->name = $data->name;
         $photo->slug = Str::of($data->name)->slug('-');
         $photo->description = $data->description;
+        $photo->album_id = $data->album_id;
         $photo->single_sale = $data->single_sale;
         $photo->price = $data->price;
        

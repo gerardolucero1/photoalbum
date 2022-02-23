@@ -53,7 +53,7 @@
                                 </jet-dropdown-link>
 
                                 <jet-dropdown-link :href="route('profile.show')">
-                                    Profile
+                                    Perfil
                                 </jet-dropdown-link>
 
                                 <jet-dropdown-link :href="route('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
@@ -65,7 +65,7 @@
                                 <!-- Authentication -->
                                 <form @submit.prevent="logout">
                                     <jet-dropdown-link as="button">
-                                        Log Out
+                                        Salir
                                     </jet-dropdown-link>
                                 </form>
                             </template>

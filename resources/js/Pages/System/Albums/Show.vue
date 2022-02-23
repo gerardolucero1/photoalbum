@@ -104,7 +104,7 @@
             background-color: rgba(0, 0, 0, .9);
             color: #ffffff;
 
-            > button {
+            button {
                 background-color: transparent;
                 color: #ffffff;
                 border: 0 none;
@@ -136,7 +136,7 @@
 </style>
 
 <template>
-    <app-layout title="Dashboard">
+    <app-layout :title="album.name">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Estas viendo {{ album.name }}
@@ -162,8 +162,90 @@
                 </div>
             </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
+                <div class="flex justify-start bg-white overflow-hidden shadow-xl sm:rounded-lg p-2">
+                    <button @click="type_view = 'table'" class="py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-table mr-1"></i> Vista tabla
+                    </button>
+                    <button @click="type_view = 'grid'" class="ml-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <i class="fas fa-border-all mr-1"></i> Vista grid
+                    </button>
+                </div>
+            </div>
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-2">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg pb-4">
-                    <section ref="gallery" class="grid-container" :key="index">
+                    <div v-if="type_view == 'table'">
+                        <DataTable class="p-datatable-customers" 
+                            filterDisplay="menu" 
+                            :value="album.photos" 
+                            :paginator="true" 
+                            :rows="50"
+                            dataKey="id" 
+                            v-model:filters="filters"
+                            :rowHover="true"
+                            :globalFilterFields="['name']"
+                            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+                            responsiveLayout="scroll"
+                            :rowsPerPageOptions="[5,10,20,50]"
+                            >
+                            <template #header>
+                                <div class="p-d-flex p-jc-between p-ai-center">
+                                    <span class="p-input-icon-left">
+                                        <i class="pi pi-search" />
+                                        <InputText v-model="filters['global'].value" :placeholder="`Filtrar`" />
+                                    </span>
+                                </div>
+                            </template>
+                            <template #empty>
+                                Sin informacion.
+                            </template>
+                            <Column field="name" header="Nombre" sortable style="min-width: 14rem">
+                                <template #body="{data}">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10">
+                                            <img class="h-10 w-10 rounded-full object-cover object-center" :src="data.url_preview" alt="" />
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ data.name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #filter="{filterModel}">
+                                    <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by name"/>
+                                </template>
+                            </Column>
+                            <Column field="price" header="Precio" sortable style="min-width: 11rem">
+                                <template #body="{data}">
+                                    <div class="text-sm text-gray-900">
+                                        {{ toCurrency(Number(data.price)) }}
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column field="private" header="Privado" sortable style="min-width: 8rem">
+                                <template #body="{data}">
+                                    <div class="text-sm text-gray-900">
+                                        <span v-if="data.private">Si</span>
+                                        <span v-else>No</span>
+                                    </div>
+                                </template>
+                            </Column>
+                            <Column class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" header="Opciones" headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+                                <template #body="{data}">
+                                    <Link v-tooltip.top="'Ver foto'" :href="route('photos.show', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                        <i class="fas fa-eye"></i>
+                                    </Link>
+                                    <Link v-tooltip.top="'Editar foto'" :href="route('photos.edit', data.id)" class="px-2 py-2 border-gray-300 rounded-md border mr-2">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </Link>
+                                    <button v-tooltip.top="'Eliminar foto'" class="px-2 py-2 border-gray-300 rounded-md border mr-2" @click="deletePhoto(image, index)">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </template>
+                            </Column>
+                        </DataTable>
+                    </div>
+                    <section v-else ref="gallery" class="grid-container" :key="index">
 
                         <Galleria :value="album.photos" v-model:activeIndex="activeIndex" thumbnailsPosition="left" :responsiveOptions="responsiveOptions" :numVisible="7" containerStyle="max-width: 850px"
                             :circular="true" :fullScreen="true" :showItemNavigators="true" :showThumbnails="false" v-model:visible="displayCustom">
@@ -182,20 +264,20 @@
                         <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
                             <div class="image-container item" v-for="(image, index) in album.photos" :key="image.url_preview">
                                 <div class="image-container-info-img" @click="imageClick(index)">
-                                    <img v-masonry-tile class="img-tile shadow-md rounded-md" :src="image.url_preview" srcset="" :alt="image.description" />
+                                    <img v-masonry-tile class="img-tile" :src="image.url_preview" srcset="" :alt="image.description" />
                                 </div>
                                 <div class="options-tile">
                                     <Link :href="route('photos.show', image.id)">
-                                        <button class="bg-pink-500 text-neutral-50 shadow-md" >
+                                        <button class="bg-pink-500 text-neutral-50" >
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </Link>
                                     <Link :href="route('photos.edit', image.id)">
-                                        <button class="bg-indigo-600 text-neutral-50 shadow-md" >
+                                        <button class="bg-indigo-600 text-neutral-50" >
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                     </Link>
-                                    <button class="bg-red-500 text-neutral-50 shadow-md" @click="deletePhoto(image, index)">
+                                    <button class="bg-red-500 text-neutral-50" @click="deletePhoto(image, index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -223,6 +305,7 @@ import { defineComponent } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import Masonry from "masonry-layout";
+import {FilterMatchMode} from 'primevue/api';
 
 export default defineComponent({
     props: [
@@ -236,6 +319,7 @@ export default defineComponent({
 
     data(){
         return{
+            type_view: 'table',
             containerId: null,
             uploading: false,
 
@@ -255,7 +339,11 @@ export default defineComponent({
                 }
             ],
             displayCustom: false,
-            index: '1'
+            index: '1',
+
+            filters: {
+                'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
+            },
         }
     },
 

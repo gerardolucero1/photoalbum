@@ -205,21 +205,21 @@
                         <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
                             <div class="image-container item" v-for="(image, index) in filter_photos" :key="image.url_preview">
                                 <div class="image-container-info-img" @click="imageClick(index)">
-                                    <img v-masonry-tile class="img-tile shadow-md rounded-md" :src="image.url_preview" srcset="" :alt="image.description" />
+                                    <img v-masonry-tile class="img-tile" :src="image.url_preview" srcset="" :alt="image.description" />
                                 </div>
     
                                 <div class="options-tile">
                                     <Link :href="route('photos.show', image.id)">
-                                        <button class="bg-pink-500 text-neutral-50 shadow-md " >
+                                        <button class="bg-pink-500 text-neutral-50" >
                                             <i class="fas fa-eye"></i>
                                         </button>
                                     </Link>
                                     <Link :href="route('photos.edit', image.id)">
-                                        <button class="bg-indigo-600 text-neutral-50 shadow-md " >
+                                        <button class="bg-indigo-600 text-neutral-50" >
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                     </Link>
-                                    <button class="bg-red-500 text-neutral-50 shadow-md " @click="deletePhoto(image, index)">
+                                    <button class="bg-red-500 text-neutral-50" @click="deletePhoto(image, index)">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -335,7 +335,7 @@ export default defineComponent({
                         let URL = `/dashboard/photos/${image.id}`
 
                         axios.delete(URL).then(response => {
-                            this.album.photos.splice(index, 1)
+                            this.photos.splice(index, 1)
                             this.$toast.add({severity:'info', summary:'Eliminada', detail:'La foto ha sido eliminada', life: 3000});
                         }).catch(error => {
                             console.log(error);

@@ -31,8 +31,11 @@
     },
     "dependencies": {
         "@sipec/vue3-tags-input": "^3.0.4",
+        "@vuelidate/core": "*",
+        "@vuelidate/validators": "*",
         "infinite-loading-vue3": "^1.0.1",
         "masonry-layout": "^4.2.2",
+        "moment": "^2.29.1",
         "primeicons": "^5.0.0",
         "primevue": "^3.11.0",
         "vue-masonry": "^0.14.0"
