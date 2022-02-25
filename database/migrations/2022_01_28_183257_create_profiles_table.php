@@ -19,6 +19,7 @@ class CreateProfilesTable extends Migration
             $table->unsignedBigInteger('plan_id')->nullable();
             $table->string('name')->nullable();
             $table->string('last_name')->nullable();
+            $table->mediumText('description')->nullable();
             $table->string('country')->nullable();
             $table->string('state')->nullable();
             $table->string('city')->nullable();

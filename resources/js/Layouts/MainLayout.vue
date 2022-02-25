@@ -9,7 +9,7 @@
                 <div class="logo col-span-1 p-1">
                     <Link :href="route('web.index')" class="mt-2 flex justify-center items-center">
                         <i class="fas fa-camera-retro"></i>
-                        <p class="ml-1 font-bold">Photoalbum</p>
+                        <p class="ml-1 mt-0.5 font-bold">Photoalbum</p>
                     </Link>
                 </div>
                 <div class="logo col-span-6 p-1 flex justify-center items-center">
@@ -52,7 +52,7 @@
                                     Dashboard
                                 </jet-dropdown-link>
 
-                                <jet-dropdown-link :href="route('profile.show')">
+                                <jet-dropdown-link :href="route('web.profile', $page.props.user.id)">
                                     Perfil
                                 </jet-dropdown-link>
 

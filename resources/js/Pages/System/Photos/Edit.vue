@@ -94,14 +94,6 @@
                                                 </textarea>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
-                                                <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
-                                                <InputSwitch id="private" v-model="photo.private" />
-                                            </div>
-                                            <div class="col-span-6 sm:col-span-6">
-                                                <label for="single_sale" class="block text-sm font-medium text-gray-700">Venta individual</label>
-                                                <InputSwitch id="single_sale" v-model="photo.single_sale" />
-                                            </div>
-                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="single_sale" class="block text-sm font-medium text-gray-700">Album</label>
                                                 <Dropdown class="w-full" v-model="album_selected" :options="albums" optionLabel="name" :filter="true" placeholder="Selecciona un album" :showClear="true">
                                                     <template #value="slotProps">
@@ -137,6 +129,19 @@
                                                         </div>
                                                     </template>
                                                 </Dropdown>
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="private" class="block text-sm font-medium text-gray-700">Privado</label>
+                                                <InputSwitch id="private" v-model="photo.private" />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
+                                                <label for="private" class="block text-sm font-medium text-gray-700">Poner como descargar libre</label>
+                                                <InputSwitch id="private" v-model="photo.free" />
+                                                <p class="text-sm text-gray-500">Si marcas esta opcion la foto estara disponible para que cualquiera pueda descargar la imagen en su maxima resolucion.</p>
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6" v-if="!photo.free">
+                                                <label for="single_sale" class="block text-sm font-medium text-gray-700">Venta individual</label>
+                                                <InputSwitch id="single_sale" v-model="photo.single_sale" />
                                             </div>
 
                                             <div v-if="photo.single_sale" class="col-span-6 sm:col-span-6">
@@ -222,6 +227,14 @@ export default defineComponent({
                 name: {
                     required
                 },
+            }
+        }
+    },
+
+    watch: {
+        'photo.free'() {
+            if (this.photo.free) {
+                this.photo.single_sale = false
             }
         }
     },

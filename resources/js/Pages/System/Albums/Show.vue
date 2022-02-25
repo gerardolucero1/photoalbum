@@ -217,8 +217,11 @@
                             </Column>
                             <Column field="price" header="Precio" sortable style="min-width: 11rem">
                                 <template #body="{data}">
-                                    <div class="text-sm text-gray-900">
+                                    <div class="text-sm text-gray-900" v-if="data.price != null">
                                         {{ toCurrency(Number(data.price)) }}
+                                    </div>
+                                    <div v-else class="text-sm text-gray-900">
+                                        $0.00
                                     </div>
                                 </template>
                             </Column>

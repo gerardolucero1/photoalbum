@@ -4,7 +4,6 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Profile
             </h2>
-            <a href="#section1">section1</a>
         </template>
 
         <div>
@@ -25,7 +24,7 @@
                     <jet-section-border />
                 </div>
 
-                <div id="section1" v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
+                <div v-if="$page.props.jetstream.canManageTwoFactorAuthentication">
                     <two-factor-authentication-form class="mt-10 sm:mt-0" />
 
                     <jet-section-border />

@@ -52,18 +52,20 @@
 </style>
 
 <template>
-    <main-layout title="Inicio"> 
+    <main-layout :title="photo.name"> 
         <div class="container mx-auto mt-5">
             <div class="flex justify-between items-center">
-                <div class="image-footer flex justify-center items-center">
-                    <div class="w-10 h-10 cursor-pointer">
-                        <img class="w-10 h-10 object-cover object-center rounded-full" :src="photo.user.profile_photo_path" alt="">
-                    </div>
-                    <div class="ml-2">
-                        <p class="text-sm font-bold cursor-pointer text-slate-600 hover:text-black">{{ photo.user.name }}</p>
-                    </div>
+                <div class="image-footer">
+                    <Link :href="route('web.profile', photo.user.id)" class=" flex justify-center items-center">
+                        <div class="w-10 h-10 cursor-pointer">
+                            <img class="w-10 h-10 object-cover object-center rounded-full" :src="photo.user.profile_photo_path" alt="">
+                        </div>
+                        <div class="ml-2">
+                            <p class="text-sm font-bold cursor-pointer text-slate-600 hover:text-black">{{ photo.user.name }}</p>
+                        </div>
+                    </Link>
                 </div>
-                <div>
+                <div v-if="album != null">
                     <p v-if="!photo.single_sale" class="text-sm">
                         Esta imagen no esta disponible para venta, revisa el album al que pertenece.
                     </p>
@@ -72,6 +74,25 @@
                             <i class="fas fa-cart-plus"></i>
                             Añadir al carrito
                         </button>
+                    </div>
+                </div>
+                <div v-else>
+                    <div v-if="!photo.free">
+                        <p v-if="!photo.single_sale" class="text-sm">
+                            Esta imagen no esta disponible para venta.
+                        </p>
+                        <div v-else>
+                            <button class="px-2 py-1 border border-gray-600 text-gray-600 hover:border-black hover:text-black rounded-sm">
+                                <i class="fas fa-cart-plus"></i>
+                                Añadir al carrito
+                            </button>
+                        </div>
+                    </div>
+                    <div v-else>
+                        <a rel="nofollow" :href="photo.url_photo" download target="_blank" class="px-2 py-1 border border-gray-600 text-gray-600 hover:border-black hover:text-black rounded-sm">
+                            <i class="fas fa-download"></i>
+                            Descargar
+                        </a>
                     </div>
                 </div>
             </div>
@@ -129,18 +150,30 @@
                                             <i class="fas fa-folder-open text-gray-400"></i>
                                         </button>
                                     </div>
-                                    <div class="image-footer flex justify-center items-center absolute bottom-0 left-0 p-2">
-                                        <div class="w-10 h-10">
-                                            <img class="w-10 h-10 object-cover object-center rounded-full" :src="photo.user.profile_photo_path" alt="">
-                                        </div>
-                                        <div class="ml-2">
-                                            <p class="text-sm font-bold cursor-pointer text-slate-200 hover:text-white">{{ photo.user.name }}</p>
-                                        </div>
+                                    <div class="image-footer absolute bottom-0 left-0 p-2">
+                                        <Link :href="route('web.profile', photo.user.id)" class="flex justify-center items-center ">
+                                            <div class="w-10 h-10">
+                                                <img class="w-10 h-10 object-cover object-center rounded-full" :src="photo.user.profile_photo_path" alt="">
+                                            </div>
+                                            <div class="ml-2">
+                                                <p class="text-sm font-bold cursor-pointer text-slate-200 hover:text-white">{{ photo.user.name }}</p>
+                                            </div>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div>
+                <div class="mt-6 flex">
+                    <h2 class="text-xl font-bold">Etiquetas relacionadas</h2>
+                </div>
+                <div class="py-5 flex flex-wrap">
+                    <Link :href="null" class="px-2 py-1 text-gray-600 bg-gray-200 mr-2 hover:bg-gray-300 hover:text-black" v-for="tag in 10">
+                        Moscu
+                    </Link>
                 </div>
             </div>
         </div>

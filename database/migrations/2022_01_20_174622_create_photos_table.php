@@ -24,6 +24,7 @@ class CreatePhotosTable extends Migration
             $table->string('url_preview');
             $table->string('url_photo');
             $table->boolean('private')->default(0);
+            $table->boolean('free')->default(0);
             $table->boolean('single_sale')->default(0);
             $table->string('price')->nullable();
             $table->timestamps();

@@ -5,12 +5,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\Web\IndexController;
-use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
+use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\SuscriptionController;
 use App\Http\Controllers\Web\PhotoController as WebPhotoController;
+use App\Http\Controllers\Web\ProfileController as WebProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,3 +74,10 @@ Route::get('/', [IndexController::class, 'index'])->name('web.index');
 Route::get('/photos/{slug}', [WebPhotoController::class, 'photo'])->name('web.photos.show');
     //Fedd
     Route::get('/feed/publications', [WebPhotoController::class, 'photos']);
+
+//Profile
+Route::get('/profile/{user}', [WebProfileController::class, 'index'])->name('web.profile');
+    //Fedd
+    Route::get('/profile/{user}/publications', [WebProfileController::class, 'photos']);
+    //Fedd
+    Route::get('/profile/{user}/albums', [WebProfileController::class, 'albums']);

@@ -36,47 +36,48 @@
 
         
     }
+
+    .banner-container{
+        width: 100%;
+        height: 35em;
+        background-color: red;
+        background-image: url('https://images.unsplash.com/photo-1644167804910-0f4b8dc53799?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1vZi10aGUtZGF5fHx8fGVufDB8fHx8&dpr=1&auto=format%2Ccompress&fit=crop&w=1799&h=594');
+        background-position: center;
+        background-size: cover;
+        
+        .layer{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.4);
+            color: white;
+        }
+    }
 </style>
 
 <template>
     <main-layout title="Inicio"> 
-        <div class="container mx-auto">
-            <div class="publication-container mt-4">
-                <infinite-scroll 
-                    @infinite-scroll="loadDataFromServer" 
-                    :noResult="noResult"
-                    :message="message">
-                    <!-- Place the content of your page here. E.g a list of resources being fetched from a server -->
-                    
-                    <div class='scrolling-component' ref='scrollComponent'>
-                        <div class="gallery-item" v-masonry="containerId" transition-duration="0.3s" item-selector=".item" :gutter="20" fit-width="true">
-                            <div class="image-container item" v-for="image in posts" :key="image.url_preview">
-                                <div class="image-container-info-img">
-                                    <figure itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
-                                        <Link itemprop="contentUrl" :href="route('web.photos.show', image.slug)">
-                                            <img v-masonry-tile class="img-tile" :src="image.url_preview" srcset="" :alt="image.description" />
-                                        </Link>
-                                    </figure>
-                                    
-                                    <div class="image-header flex justify-end items-center w-full absolute top-0 right-0 p-2">
-                                        <button class="w-10 h-10 flex justify-center items-center rounded-md bg-white">
-                                            <i class="fas fa-folder-open text-gray-400"></i>
-                                        </button>
-                                    </div>
-                                    <div class="image-footer flex justify-center items-center absolute bottom-0 left-0 p-2">
-                                        <div class="w-10 h-10">
-                                            <img class="w-10 h-10 object-cover object-center rounded-full" :src="image.user.profile_photo_path" alt="">
-                                        </div>
-                                        <div class="ml-2">
-                                            <p class="text-sm font-bold cursor-pointer text-slate-200 hover:text-white">{{ image.user.name }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <div>
+            <div class="banner-container">
+                <div class="layer">
+                    <Link :href="route('web.index')" class="mt-2 flex justify-center items-center text-3xl">
+                        <i class="fas fa-camera-retro"></i>
+                        <p class="ml-1 mt-1 font-bold">Photoalbum</p>
+                    </Link>
+                    <p class="font-bold text-lg mt-2">Lorem ipsum dolor sit amet adipisicing elit. Tempore alias est eius beatae iure.</p>
+                    <div class="flex flex-wrap mt-2">
+                        <Link :href="null" class="px-2 py-1 text-sm text-gray-500 bg-gray-100 mr-2 hover:bg-gray-300 hover:text-black" v-for="tag in 10">
+                            Lorem
+                        </Link>
                     </div>
-                </infinite-scroll>
+                </div>
             </div>
+        </div>
+        <div class="container mx-auto">
+            <feed-index-component></feed-index-component>
         </div>
        
             
@@ -88,13 +89,13 @@
 import { defineComponent } from 'vue'
 import MainLayout from '@/Layouts/MainLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
-import InfiniteScroll from "infinite-loading-vue3";
+import FeedIndexComponent from './Components/FeedIndexComponent.vue'
 
 export default defineComponent({
     components: {
         MainLayout,
         Link,
-        InfiniteScroll
+        FeedIndexComponent
     },
 
     setup(){
@@ -113,29 +114,11 @@ export default defineComponent({
     },
 
     mounted(){
-        this.loadDataFromServer()
+        
     },
 
     methods: {
-         async loadDataFromServer(){
-            try {
-                let URL = `/feed/publications?page=${this.page}`
-                let result = await axios.get(URL)
 
-                if(result.data.data.length) {
-                    console.log(result.data.data);
-                    this.posts.push(...result.data.data)
-                    this.page++
-                } else {
-                    this.noResult = true
-                    this.message = "No result found"
-                }
-
-            } catch (error) {
-                this.noResult = true
-                this.message = "Error loading data"
-            }
-        }
     }
 
 })

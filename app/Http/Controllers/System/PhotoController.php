@@ -88,6 +88,7 @@ class PhotoController extends Controller
         $photo->slug = Str::of($data->name)->slug('-');
         $photo->description = $data->description;
         $photo->album_id = $data->album_id;
+        $photo->free = $data->free;
         $photo->single_sale = $data->single_sale;
         $photo->price = $data->price;
        
@@ -104,8 +105,9 @@ class PhotoController extends Controller
 
             $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
             $thumbName = md5($archivo->getRealPath() . time());
+            $urlName = $thumbName.mt_rand();
             $guessExtension = $archivo->guessExtension();
-            $path = $archivo->storeAs('images', $thumbName.'.'.$guessExtension  ,'s3');
+            $path = $archivo->storeAs('images', $urlName.'.'.$guessExtension  ,'s3');
 
             //Guardar thumb
             $img = Image::make($archivo);
@@ -114,14 +116,19 @@ class PhotoController extends Controller
             });
             $resource = $img->stream()->detach();
             Storage::disk('s3')->put(
-                'images/' . $thumbName.'-thumbnail.'.$guessExtension,
+                'images/' . $thumbName.'.'.$guessExtension,
                 $resource
             );
 
             $photo->size = $archivo->getSize();
-            $photo->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
-            $photo->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+            $photo->fill(['url_preview' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+            $photo->fill(['url_photo' => asset($url.'images/'.$urlName.'.'.$guessExtension)]);
 
+        }
+
+        if ($data->free == true) {
+            $photo->single_sale = 0;
+            $photo->price = null;
         }
         $photo->syncTags($data->tags);
         $photo->save();
@@ -184,8 +191,9 @@ class PhotoController extends Controller
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());
+                $urlName = $thumbName.mt_rand();
                 $guessExtension = $file->guessExtension();
-                $path = $file->storeAs('images', $thumbName.'.'.$guessExtension  ,'s3');
+                $path = $file->storeAs('images', $urlName.'.'.$guessExtension  ,'s3');
 
                 //Guardar thumb
                 $img = Image::make($file);
@@ -194,15 +202,15 @@ class PhotoController extends Controller
                 });
                 $resource = $img->stream()->detach();
                 Storage::disk('s3')->put(
-                    'images/' . $thumbName.'-thumbnail.'.$guessExtension,
+                    'images/' . $thumbName.'.'.$guessExtension,
                     $resource
                 );
 
                 $image->name = $file->getClientOriginalName();
                 $image->slug = Str::of($image->name)->slug('-');
 
-                $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
-                $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+                $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+                $image->fill(['url_photo' => asset($url.'images/'.$urlName.'.'.$guessExtension)]);
 
                 $image->save();
 

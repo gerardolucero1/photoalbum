@@ -135,7 +135,10 @@
 
         <Sidebar v-model:visible="sidebar" :baseZIndex="1000" position="right">
             <h3 class="text-xl font-bold">Ajusta el precio de todas las fotos pertenecientes a este album</h3>
-            <h5 class="text-sm mt-2">Precio sugerido: <span class="font-bold">{{ toCurrency(Number(album_selected.price / album_selected.photos_count)) }}</span></h5>
+            <h5 class="text-sm mt-2">Precio sugerido: 
+                <span class="font-bold" v-if="album_selected.price != null">{{ toCurrency(Number(album_selected.price / album_selected.photos_count)) }}</span>
+                <span class="font-bold">$0.00</span>
+            </h5>
             <div class="mt-5">
                 <input type="number" min="0" class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" v-model="single_price">
                 <div v-if="v$.single_price.$error">

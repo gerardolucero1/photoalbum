@@ -32,4 +32,5 @@ class Album extends Model
     {
         return $this->hasMany(Photo::class);
     }
+
 }

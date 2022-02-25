@@ -187,8 +187,9 @@ class AlbumController extends Controller
 
                 $url = 'https://goovem.s3.us-west-1.amazonaws.com/';
                 $thumbName = md5($file->getRealPath() . time());
+                $urlName = $thumbName.mt_rand();
                 $guessExtension = $file->guessExtension();
-                $path = $file->storeAs('images', $thumbName.'.'.$guessExtension  ,'s3');
+                $path = $file->storeAs('images', $urlName.'.'.$guessExtension  ,'s3');
 
                 //Guardar thumb
                 $img = Image::make($file);
@@ -197,15 +198,15 @@ class AlbumController extends Controller
                 });
                 $resource = $img->stream()->detach();
                 Storage::disk('s3')->put(
-                    'images/' . $thumbName.'-thumbnail.'.$guessExtension,
+                    'images/' . $thumbName.'.'.$guessExtension,
                     $resource
                 );
 
                 $image->name = $file->getClientOriginalName();
                 $image->slug = Str::of($image->name)->slug('-');
 
-                $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
-                $image->fill(['url_photo' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+                $image->fill(['url_preview' => asset($url.'images/'.$thumbName.'.'.$guessExtension)]);
+                $image->fill(['url_photo' => asset($url.'images/'.$urlName.'.'.$guessExtension)]);
 
                 $image->save();
 
