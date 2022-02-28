@@ -25,10 +25,6 @@ class DatabaseSeeder extends Seeder
             'profile_photo_path' => 'https://pm1.narvii.com/7473/ce61825edd978ec7e2a4427115bf3d23b18a8c40r1-1128-1504v2_hq.jpg',
         ]);
 
-        $user = Profile::create([
-            'user_id' => $user->id,
-        ]);
-
         $plan = Plan::create([
             'name' => 'Free',
             'slug' => 'free',
@@ -60,6 +56,11 @@ class DatabaseSeeder extends Seeder
             'price' => 5,
             'abbreviation' => '/premium',
             'disk_space' => 1000000,
+        ]);
+
+        $user = Profile::create([
+            'user_id' => $user->id,
+            'plan_id' => 1,
         ]);
     }
 }
