@@ -99,6 +99,16 @@
                                                 </div>
                                             </div>
                                             <div class="col-span-6 sm:col-span-6">
+                                                <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
+                                                <vue-tags-input
+                                                    class="mt-1 w-full"
+                                                    placeholder=""
+                                                    v-model="tag"
+                                                    :tags="tags"
+                                                    @tags-changed="newTags => tags = newTags"
+                                                    />
+                                            </div>
+                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Elige una imagen para tu album</label>
                                                 <FileUpload class="mt-1" ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
                                                     <template #empty>
@@ -138,6 +148,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/inertia-vue3';
 import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
+import VueTagsInput from '@sipec/vue3-tags-input';
 
 export default defineComponent({
     props: [
@@ -151,6 +162,7 @@ export default defineComponent({
     components: {
         AppLayout,
         Link,
+        VueTagsInput
     },
 
     data(){
@@ -162,7 +174,8 @@ export default defineComponent({
                 price: null,
                 active: false,
             },
-
+            tag: '',
+            tags: [],
             uploading: false,
         }
     },
@@ -202,7 +215,8 @@ export default defineComponent({
                 if (!this.new_album.show_price) {
                     this.new_album.price = null
                 }
-                
+                this.album.tags = this.tags.map(doc => doc.text);
+
                 data.append('props', JSON.stringify(this.new_album))
                 data.append("file", $event.files[0]);
 

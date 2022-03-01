@@ -10,6 +10,7 @@ use App\Http\Controllers\System\AlbumController;
 use App\Http\Controllers\System\PhotoController;
 use App\Http\Controllers\System\ProfileController;
 use App\Http\Controllers\System\SuscriptionController;
+use App\Http\Controllers\Web\AlbumController as WebAlbumController;
 use App\Http\Controllers\Web\PhotoController as WebPhotoController;
 use App\Http\Controllers\Web\ProfileController as WebProfileController;
 
@@ -72,6 +73,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
 
 Route::get('/', [IndexController::class, 'index'])->name('web.index');
 Route::get('/photos/{slug}', [WebPhotoController::class, 'photo'])->name('web.photos.show');
+Route::get('/albums/{slug}', [WebAlbumController::class, 'album'])->name('web.albums.show');
     //Fedd
     Route::get('/feed/publications', [WebPhotoController::class, 'photos']);
 

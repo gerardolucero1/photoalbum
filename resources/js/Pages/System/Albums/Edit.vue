@@ -32,6 +32,10 @@
             stroke: #ffa700;
         }
     }
+
+    .ti-tags{
+        background-color: red !important;
+    }
 </style>
 
 <template>
@@ -106,15 +110,16 @@
                                                     <p v-else class="text-sm text-gray-500">Este album incluido todo su contenido se pondra en estatus "publico" y se indexara dentro de la plataforma.</p>
                                                 </div>
                                             </div>
-                                            <!-- <div class="col-span-6 sm:col-span-6">
+                                            <div class="col-span-6 sm:col-span-6">
                                                 <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
                                                 <vue-tags-input
-                                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                                                    placeholder=""
+                                                    style="border-radius: 6px;"
                                                     v-model="tag"
                                                     :tags="tags"
                                                     @tags-changed="newTags => tags = newTags"
                                                     />
-                                            </div> -->
+                                            </div>
                                             <div class="col-span-6 sm:col-span-6">
                                                 <label for="private" class="block text-sm font-medium text-gray-700">Elige una imagen para tu album</label>
                                                 <FileUpload class="mt-1" ref="uploader" accept="image/*" chooseLabel="Seleccionar" :multiple="false" :auto="false" :fileLimit="1" :showUploadButton="false" :showCancelButton="false" name="files[]" :withCredentials="true" :customUpload="true" @uploader="sendForm" @progress="uploadingFiles">
@@ -182,6 +187,13 @@ export default defineComponent({
         this.album.private == 1 ? this.album.private = true :  this.album.private = false
         this.album.active == 1 ? this.album.active = true :  this.album.active = false
         this.album.price != null ? this.album.show_price = true :  this.album.show_price = false
+
+        this.tags = this.album.tags.map(doc => {
+            let tag = {
+                text: doc.name.en
+            }
+            return tag
+        })
     },
 
     data(){
@@ -227,6 +239,8 @@ export default defineComponent({
                 if (!this.album.show_price) {
                     this.album.price = null
                 }
+
+                this.album.tags = this.tags.map(doc => doc.text);
                 
                 data.append('props', JSON.stringify(this.album))
                 data.append("file", $event.files[0]);

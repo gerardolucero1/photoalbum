@@ -86,6 +86,8 @@
             <main>
                 <slot></slot>
             </main>
+
+            <FooterComponent />
         </div>
     </div>
 </template>
@@ -99,6 +101,7 @@ import JetDropdownLink from '@/Jetstream/DropdownLink.vue'
 import JetNavLink from '@/Jetstream/NavLink.vue'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink.vue'
 import { Head, Link } from '@inertiajs/inertia-vue3';
+import FooterComponent from '@/Pages/Web/Components/FooterComponent.vue'
 
 export default defineComponent({
     props: {
@@ -114,6 +117,7 @@ export default defineComponent({
         JetNavLink,
         JetResponsiveNavLink,
         Link,
+        FooterComponent
     },
 
     data() {

@@ -76,7 +76,8 @@ class AlbumController extends Controller
             $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
         }
         $album->save();
-
+        $album->syncTags($data->tags);
+        
         return $album;
     }
 
@@ -100,7 +101,7 @@ class AlbumController extends Controller
      */
     public function edit($id)
     {
-        $album = Album::find($id);
+        $album = Album::with('tags')->find($id);
         return Inertia::render('System/Albums/Edit', compact('album'));
     }
 
@@ -143,9 +144,9 @@ class AlbumController extends Controller
             $album->fill(['photo_url' => asset($url.'images/'.$thumbName.'-thumbnail.'.$guessExtension)]);
         }
         $album->photos()->update([ 'private' => $data->private ]);
-        // foreach ($album->photos as $photo) {
-        //     $photo->syncTags($data->tags);
-        // }
+        $album->syncTags($data->tags);
+
+
         $album->save();
 
         return $album;

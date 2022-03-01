@@ -24,26 +24,28 @@
     <div>
         <div class="grid grid-cols-12 gap-4">
             <div class="album-container col-span-3" v-for="album in albums" :key="album.created_at">
-                <div class="album-container grid grid-cols-12 gap-1">
-                    <div class="col-span-9">
-                        <div v-if="album.photos[0]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[0].url_preview + ')' }" />
-                        <div v-else class="image-bg" :style="{ backgroundImage: 'url(https://htmlcolorcodes.com/assets/images/colors/light-gray-color-solid-background-1920x1080.png)' }" />
-                    </div>
-                    <div class="col-span-3 flex justify-center items-center flex-col">
-                        <div class="h-1/2 w-full border-b-2 border-white">
-                            <div v-if="album.photos[1]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[1].url_preview + ')' }" />
+                <Link :href="route('web.albums.show', album.id)">
+                    <div class="album-container grid grid-cols-12 gap-1">
+                        <div class="col-span-9">
+                            <div v-if="album.photos[0]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[0].url_preview + ')' }" />
                             <div v-else class="image-bg" :style="{ backgroundImage: 'url(https://htmlcolorcodes.com/assets/images/colors/light-gray-color-solid-background-1920x1080.png)' }" />
                         </div>
-                        <div class="h-1/2 w-full border-t-2 border-white">
-                            <div v-if="album.photos[2]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[2].url_preview + ')' }" />
-                            <div v-else class="image-bg" :style="{ backgroundImage: 'url(https://htmlcolorcodes.com/assets/images/colors/light-gray-color-solid-background-1920x1080.png)' }" />
+                        <div class="col-span-3 flex justify-center items-center flex-col">
+                            <div class="h-1/2 w-full border-b-2 border-white">
+                                <div v-if="album.photos[1]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[1].url_preview + ')' }" />
+                                <div v-else class="image-bg" :style="{ backgroundImage: 'url(https://htmlcolorcodes.com/assets/images/colors/light-gray-color-solid-background-1920x1080.png)' }" />
+                            </div>
+                            <div class="h-1/2 w-full border-t-2 border-white">
+                                <div v-if="album.photos[2]" class="image-bg" :style="{ backgroundImage: 'url(' + album.photos[2].url_preview + ')' }" />
+                                <div v-else class="image-bg" :style="{ backgroundImage: 'url(https://htmlcolorcodes.com/assets/images/colors/light-gray-color-solid-background-1920x1080.png)' }" />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="mt-2">
-                    <p class="font-bold text-lg">{{ album.name }}</p>
-                    <p class="text-sm text-gray-600">{{ album.photos_count }} fotos - {{ this.user.name }}</p>
-                </div>
+                    <div class="mt-2">
+                        <p class="font-bold text-lg">{{ album.name }}</p>
+                        <p class="text-sm text-gray-600">{{ album.photos_count }} fotos - {{ this.user.name }}</p>
+                    </div>
+                </Link>
             </div>
         </div>
     </div>

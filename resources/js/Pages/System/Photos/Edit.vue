@@ -152,6 +152,7 @@
                                                 <label for="tags" class="block text-sm font-medium text-gray-700">Etiquetas</label>
                                                 <vue-tags-input
                                                     class="mt-1 w-full"
+                                                    placeholder=""
                                                     v-model="tag"
                                                     :tags="tags"
                                                     @tags-changed="newTags => tags = newTags"
