@@ -3,10 +3,11 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Models\Profile;
+use Laravel\Jetstream\Jetstream;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
-use Laravel\Jetstream\Jetstream;
 
 class CreateNewUser implements CreatesNewUsers
 {
@@ -27,10 +28,19 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['required', 'accepted'] : '',
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'name' => $input['name'],
             'email' => $input['email'],
+            'username' => time(),
             'password' => Hash::make($input['password']),
+            'profile_photo_path' => 'https://www.allkpop.com/upload/2021/10/content/071046/web_data/allkpop_1633618088_20211007-joyuri3.jpg',
         ]);
+
+        Profile::create([
+            'user_id' => $user->id,
+            'plan_id' => 1,
+        ]);
+
+        return $user;
     }
 }

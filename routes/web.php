@@ -4,6 +4,7 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Web\IndexController;
 use App\Http\Controllers\System\SaleController;
 use App\Http\Controllers\System\AlbumController;
@@ -24,6 +25,8 @@ use App\Http\Controllers\Web\ProfileController as WebProfileController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::post('/custom/register', [AuthController::class, 'register'])->name('custom.register');
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function () {
     Route::get('/dashboard', function () {

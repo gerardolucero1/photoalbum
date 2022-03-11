@@ -12,7 +12,7 @@ class PhotoController extends Controller
 {
     public function photo($slug)
     {
-        $photo = Photo::where('slug', $slug)->with(['user', 'user.profile'])->first();
+        $photo = Photo::with('tags')->where('slug', $slug)->with(['user', 'user.profile'])->first();
         $album = Album::with('tags')->with(['photos' => function($q){
             $q->where('private', 0);
         }])->where('id', $photo->album_id)->first();

@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         $user = User::create([
             'name' => 'Gerardo Lucero',
             'email' => 'gera_conecta@hotmail.com',
+            'username' => time(),
             'password' => bcrypt('Margarit@1'),
             'profile_photo_path' => 'https://pm1.narvii.com/7473/ce61825edd978ec7e2a4427115bf3d23b18a8c40r1-1128-1504v2_hq.jpg',
         ]);

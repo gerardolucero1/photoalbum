@@ -28,10 +28,5 @@ class CreateCustomerStripe
     public function handle(Registered $event)
     {
         $event->user->createAsStripeCustomer();
-
-        Profile::create([
-            'user_id' => $event->user->id,
-            'plan_id' => 1,
-        ]);
     }
 }

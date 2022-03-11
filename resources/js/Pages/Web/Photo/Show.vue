@@ -173,13 +173,23 @@
                         Este album es privado.
                     </p>
                 </div>
+                <div>
+                    <div class="mt-6 flex">
+                        <h2 class="text-xl font-bold">Etiquetas relacionadas</h2>
+                    </div>
+                    <div class="py-5 flex flex-wrap">
+                        <Link :href="null" class="px-2 py-1 text-gray-600 bg-gray-200 mr-2 hover:bg-gray-300 hover:text-black" v-for="tag in album.tags" :key="tag.created_at">
+                            {{ tag.name.en }}
+                        </Link>
+                    </div>
+                </div>
             </div>
-            <div>
+            <div v-else>
                 <div class="mt-6 flex">
                     <h2 class="text-xl font-bold">Etiquetas relacionadas</h2>
                 </div>
                 <div class="py-5 flex flex-wrap">
-                    <Link :href="null" class="px-2 py-1 text-gray-600 bg-gray-200 mr-2 hover:bg-gray-300 hover:text-black" v-for="tag in album.tags" :key="tag.created_at">
+                    <Link :href="null" class="px-2 py-1 text-gray-600 bg-gray-200 mr-2 hover:bg-gray-300 hover:text-black" v-for="tag in photo.tags" :key="tag.created_at">
                         {{ tag.name.en }}
                     </Link>
                 </div>
