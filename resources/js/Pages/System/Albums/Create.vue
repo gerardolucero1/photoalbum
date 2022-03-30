@@ -215,7 +215,7 @@ export default defineComponent({
                 if (!this.new_album.show_price) {
                     this.new_album.price = null
                 }
-                this.album.tags = this.tags.map(doc => doc.text);
+                this.new_album.tags = this.tags.map(doc => doc.text);
 
                 data.append('props', JSON.stringify(this.new_album))
                 data.append("file", $event.files[0]);
